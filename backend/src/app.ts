@@ -10,6 +10,7 @@ import attributeRoutes from "./modules/attributes/attributes.routes.js";
 import productRoutes from "./modules/products/products.routes.js";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import orderRoutes from "./modules/orders/orders.routes.js";
+import seedRoutes from "./modules/seed/routes.js";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/attributes", attributeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/seed", seedRoutes);
 
 // app.use((req, res, next) => {
 //   const error = new Error("Not Found");
