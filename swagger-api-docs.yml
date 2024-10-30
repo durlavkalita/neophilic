@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: E-commerce API
+  description: API documentation for the E-commerce backend.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUser"
+            examples:
+              user:
+                summary: Example user registration
+                value:
+                  email: "user@example.com"
+                  password: "SecurePass123!"
+      responses:
+        "201":
+          description: Successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid input
+        "409":
+          description: User already exists
+
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUser"
+            examples:
+              login:
+                value:
+                  email: "user@example.com"
+                  password: "SecurePass123!"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+
+  /auth/me:
+    get:
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user profile data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token
+      responses:
+        "200":
+          description: New access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "403":
+          description: Invalid refresh token
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterUser:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "user@example.com"
+        password:
+          type: string
+          example: "SecurePass123!"
+
+    LoginUser:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "user@example.com"
+        password:
+          type: string
+          example: "SecurePass123!"
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          example: "dGhpcyBpcyBhIHNhbXBsZSB0b2tlbg=="
+        user:
+          $ref: "#/components/schemas/User"
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64b5f3fd1d83c12f1cbd92a4"
+        email:
+          type: string
+          example: "user@example.com"
+        role:
+          type: string
+          example: "user"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-02T00:00:00Z"
