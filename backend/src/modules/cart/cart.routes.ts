@@ -5,19 +5,23 @@ import {
   getCart,
   updateCartItem,
 } from "./cart.controller.js";
+import {
+  authenticate,
+  authorizeUser,
+} from "../../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 // Get the user's cart
-router.get("/:userId", getCart);
+router.get("/", authenticate, getCart);
 
 // Add a product to the cart
-router.post("/:userId", addToCart);
+router.post("/", authenticate, addToCart);
 
 // Update the quantity of a product in the cart
-router.patch("/:userId/:cartId", updateCartItem);
+router.patch("/:cartId", authenticate, updateCartItem);
 
 // Delete a specific product from the cart
-router.delete("/:userId/:cartId", deleteCartItem);
+router.delete("/:cartId", authenticate, deleteCartItem);
 
 export default router;

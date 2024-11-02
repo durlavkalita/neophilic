@@ -18,7 +18,7 @@ const InventoryHistorySchema = new Schema<IInventoryHistory>(
       enum: ["STOCK_ADJUSTMENT", "SALE", "PURCHASE", "RETURN"],
       required: true,
     },
-    referenceId: { type: Schema.Types.ObjectId, required: true },
+    referenceId: { type: Schema.Types.ObjectId },
     notes: { type: String },
   },
   { timestamps: { createdAt: "created_at" } }

@@ -17,14 +17,4 @@ const AttributeSchema = new Schema<IAttribute>(
   }
 );
 
-const productAttributeSchema = new Schema({
-  attribute: { type: Schema.Types.ObjectId, ref: "Attribute", required: true },
-  value: { type: String, required: true },
-});
-
-export const ProductAttribute = model(
-  "ProductAttribute",
-  productAttributeSchema
-);
-
 export const Attribute = model<IAttribute>("Attribute", AttributeSchema);

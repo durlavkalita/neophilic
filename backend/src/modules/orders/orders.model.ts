@@ -23,6 +23,7 @@ const OrderSchema = new Schema<IOrder>(
 
         quantity: { type: Number },
         priceAtTime: { type: String },
+        _id: false,
       },
     ],
     paymentStatus: {
@@ -45,52 +46,5 @@ const OrderSchema = new Schema<IOrder>(
   },
   { timestamps: true }
 );
-
-export interface IOrderItem extends Document {
-  orderId: Schema.Types.ObjectId;
-  productId: Schema.Types.ObjectId;
-  quantity: number;
-  priceAtTime: string;
-  createdAt: Date;
-}
-
-const OrderItemSchema = new Schema<IOrderItem>(
-  {
-    orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
-    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-    quantity: { type: Number, required: true },
-    priceAtTime: { type: String, required: true },
-  },
-  { timestamps: true }
-);
-
-export interface IOrderStatusHistory extends Document {
-  orderId: Schema.Types.ObjectId;
-  status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELED";
-  updatedBy: Schema.Types.ObjectId;
-  notes?: string;
-  createdAt: Date;
-}
-
-const OrderStatusHistorySchema = new Schema<IOrderStatusHistory>(
-  {
-    orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
-    status: {
-      type: String,
-      enum: ["PENDING", "SHIPPED", "DELIVERED", "CANCELED"],
-      default: "PENDING",
-    },
-    updatedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    notes: { type: String },
-  },
-  { timestamps: { createdAt: "created_at" } }
-);
-
-export const OrderStatusHistory = model<IOrderStatusHistory>(
-  "OrderStatusHistory",
-  OrderStatusHistorySchema
-);
-
-export const OrderItem = model<IOrderItem>("OrderItem", OrderItemSchema);
 
 export const Order = model<IOrder>("Order", OrderSchema);

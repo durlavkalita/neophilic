@@ -7,11 +7,14 @@ import {
   getOrderByUserId,
   getOrderInvoice,
 } from "./order.controller.js";
-import { authenticate } from "../../middleware/auth.middleware.js";
+import {
+  authenticate,
+  authorizeAdmin,
+} from "../../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", authenticate, getAllOrders);
+router.get("/", authenticate, authorizeAdmin, getAllOrders);
 router.post("/", authenticate, createOrder);
 router.get("/:id", authenticate, getOrderById);
 router.get("/user/:userId", authenticate, getOrderByUserId);

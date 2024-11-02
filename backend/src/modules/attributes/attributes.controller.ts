@@ -5,9 +5,11 @@ import { Attribute } from "./attributes.model.js";
 export const getAllAttributes = async (req: Request, res: Response) => {
   try {
     const attributes = await Attribute.find();
-    res.json(attributes);
+    res.status(200).json({ message: "Successful", data: attributes });
+    return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+    return;
   }
 };
 
@@ -15,21 +17,29 @@ export const getAllAttributes = async (req: Request, res: Response) => {
 export const getAttributeById = async (req: Request, res: Response) => {
   try {
     const attribute = await Attribute.findById(req.params.id);
-    if (!attribute) res.status(404).json({ error: "Collection not found" });
-    res.json(attribute);
+    if (!attribute) {
+      res.status(404).json({ error: "Collection not found" });
+      return;
+    }
+    res.status(200).json({ message: "Successful", data: attribute });
+    return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+    return;
   }
 };
 
 // Create new attribute (Admin only)
 export const createAttribute = async (req: Request, res: Response) => {
   try {
-    const attribute = new Attribute(req.body);
+    const { name, values } = req.body;
+    const attribute = new Attribute({ name, values });
     await attribute.save();
-    res.status(201).json(attribute);
+    res.status(201).json({ message: "Successful", data: attribute });
+    return;
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+    return;
   }
 };
 
@@ -41,10 +51,15 @@ export const updateAttributeById = async (req: Request, res: Response) => {
       req.body,
       { new: true }
     );
-    if (!attribute) res.status(404).json({ error: "Attribute not found" });
-    res.json(attribute);
+    if (!attribute) {
+      res.status(404).json({ error: "Attribute not found" });
+      return;
+    }
+    res.status(200).json({ message: "Successful", data: attribute });
+    return;
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+    return;
   }
 };
 
@@ -52,9 +67,13 @@ export const updateAttributeById = async (req: Request, res: Response) => {
 export const deleteAttributeById = async (req: Request, res: Response) => {
   try {
     const attribute = await Attribute.findByIdAndDelete(req.params.id);
-    if (!attribute) res.status(404).json({ error: "Attribute not found" });
-    res.status(204).send();
+    if (!attribute) {
+      res.status(404).json({ error: "Attribute not found" });
+      return;
+    }
+    res.status(204).json({ message: "Successful" });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+    return;
   }
 };

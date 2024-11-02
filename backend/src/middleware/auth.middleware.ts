@@ -17,7 +17,7 @@ export const authenticate = async (
     }
     const decoded = jwt.verify(token, JWT_SECRET) as {
       id: string;
-      role: "USER" | "VENDOR" | "ADMIN";
+      role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
     };
     const user = { id: decoded.id, role: decoded.role };
 

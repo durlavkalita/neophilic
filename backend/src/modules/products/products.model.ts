@@ -3,13 +3,17 @@ import { Document, Schema, Types, model } from "mongoose";
 export interface IProduct extends Document {
   name: string;
   description: string;
-  base_price: string;
-  current_price: string;
+  basePrice: string;
+  currentPrice: string;
   sku: string;
   currentStock: number;
-  thumbnailId: string;
+  mainImage: string;
+  images: string[];
   category: Types.ObjectId;
-  attributes: Types.ObjectId[];
+  attributes: {
+    name: string;
+    value: string;
+  }[];
   status: "ENABLED" | "DISABLED";
   createdAt: Date;
   updatedAt: Date;
@@ -19,13 +23,20 @@ const ProductSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    base_price: { type: String, required: true },
-    current_price: { type: String, required: true },
+    basePrice: { type: String, required: true },
+    currentPrice: { type: String, required: true },
     sku: { type: String, required: true },
     currentStock: { type: Number, default: 0 },
-    thumbnailId: { type: String, required: true },
+    mainImage: { type: String },
+    images: [{ type: String }],
     category: { type: Schema.Types.ObjectId, ref: "Category" },
-    attributes: [{ type: Schema.Types.ObjectId, ref: "ProductAttribute" }],
+    attributes: [
+      {
+        name: String,
+        value: String,
+        _id: false,
+      },
+    ],
     status: { type: String, enum: ["ENABLED", "DISABLED"], default: "ENABLED" },
   },
   {

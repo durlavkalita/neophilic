@@ -13,8 +13,8 @@ import {
 
 const router = express.Router();
 
-router.get("/", authenticate, getAllCategories);
-router.get("/:id", authenticate, getCategoryById);
+router.get("/", getAllCategories);
+router.get("/:id", getCategoryById);
 router.post("/", authenticate, authorizeAdmin, createCategory);
 router.put("/:id", authenticate, authorizeAdmin, updateCategoryById);
 router.delete("/:id", authenticate, authorizeAdmin, deleteCategoryById);

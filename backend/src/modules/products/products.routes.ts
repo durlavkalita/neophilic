@@ -14,13 +14,23 @@ import {
   authenticate,
   authorizeAdmin,
 } from "../../middleware/auth.middleware.js";
+import { uploadProductImage } from "../../utils/helpers.js";
 
 const router = express.Router();
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 router.get("/search/name", searchProducts);
-router.post("/", authenticate, authorizeAdmin, createProduct);
+router.post(
+  "/",
+  authenticate,
+  authorizeAdmin,
+  uploadProductImage.fields([
+    { name: "mainFile", maxCount: 1 },
+    { name: "files", maxCount: 5 },
+  ]),
+  createProduct
+);
 router.put("/:id", authenticate, authorizeAdmin, updateProductById);
 router.delete("/:id", authenticate, authorizeAdmin, deleteProductById);
 

@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { Cart } from "./cart.model.js";
 
 export const getCart = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
+  const userId = req.user?.id;
   try {
-    const cart = await Cart.find({ user: userId }).populate("product");
+    const cart = await Cart.find({ user: userId });
     if (!cart) {
       res.status(404).json({ message: "Cart not found" });
       return;
@@ -18,14 +18,14 @@ export const getCart = async (req: Request, res: Response) => {
 };
 
 export const addToCart = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
+  const userId = req.user?.id;
   const { productId, quantity, priceAtTime } = req.body;
 
   try {
     let cart = await Cart.findOne({
       user: userId,
       product: productId,
-    }).populate("product");
+    });
 
     if (!cart) {
       const newCart = new Cart({

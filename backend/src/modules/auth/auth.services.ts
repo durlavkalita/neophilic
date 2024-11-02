@@ -5,7 +5,15 @@ import { generateAccessToken, generateRefreshToken } from "./auth.helpers.js";
 interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  user: IUser;
+  userDetails: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+    phoneNumber: string;
+    address: string;
+    role: string;
+  };
 }
 
 export const register = async (
@@ -21,8 +29,16 @@ export const register = async (
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
-
-  return { accessToken, refreshToken, user };
+  const userDetails = {
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    image: user.image,
+    phoneNumber: user.phoneNumber,
+    address: user.address,
+    role: user.role,
+  };
+  return { accessToken, refreshToken, userDetails };
 };
 
 export const login = async (
@@ -36,6 +52,14 @@ export const login = async (
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
-
-  return { accessToken, refreshToken, user };
+  const userDetails = {
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    image: user.image,
+    phoneNumber: user.phoneNumber,
+    address: user.address,
+    role: user.role,
+  };
+  return { accessToken, refreshToken, userDetails };
 };
