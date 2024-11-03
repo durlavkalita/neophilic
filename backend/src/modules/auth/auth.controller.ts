@@ -11,23 +11,8 @@ import {
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const { accessToken, refreshToken, userDetails } =
-      await authService.register(email, password);
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: false, // Use true if in production with HTTPS
-      // sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours for access token
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, // Use true if in production with HTTPS
-      // sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
-    });
-    res
-      .status(201)
-      .json({ message: "User registered successfully", userDetails });
+    const data = await authService.register(email, password);
+    res.status(201).json({ message: "User registered successfully", data });
     return;
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -38,23 +23,9 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const { accessToken, refreshToken, userDetails } = await authService.login(
-      email,
-      password
-    );
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true, // Use true if in production with HTTPS
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours for access token
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true, // Use true if in production with HTTPS
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
-    });
-    res.status(200).json({ message: "Login Successful", userDetails });
+    const data = await authService.login(email, password);
+
+    res.status(200).json({ message: "Login Successful", data });
     return;
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -194,12 +165,10 @@ export const refreshToken = async (req: Request, res: Response) => {
       address: user.address,
       role: user.role,
     };
-    res
-      .status(200)
-      .json({
-        message: "Access token refreshed successfully",
-        user: userDetails,
-      });
+    res.status(200).json({
+      message: "Access token refreshed successfully",
+      user: userDetails,
+    });
     return;
   } catch (error) {
     res.status(403).json({ message: "Invalid refresh token" });
