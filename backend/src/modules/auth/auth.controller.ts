@@ -157,31 +157,26 @@ export const updateUserRoleById = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
-    // Extract the refresh token from cookies
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       res.status(401).json({ message: "Refresh token not found" });
       return;
     }
 
-    // Verify the refresh token
     const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as {
       id: string;
       role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
     };
     const userId = decoded.id;
 
-    // Ensure the user exists and is authorized to refresh
     const user = await User.findById(userId);
     if (!user) {
       res.status(403).json({ message: "User not found" });
       return;
     }
 
-    // Generate a new access token
     const newAccessToken = generateAccessToken(user);
 
-    // Send the new access token in an HTTP-only, secure cookie
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: false,
@@ -189,8 +184,22 @@ export const refreshToken = async (req: Request, res: Response) => {
       // sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 15 minutes expiration
     });
-
-    res.status(200).json({ message: "Access token refreshed successfully" });
+    const userDetails = {
+      _id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      image: user.image,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      role: user.role,
+    };
+    res
+      .status(200)
+      .json({
+        message: "Access token refreshed successfully",
+        user: userDetails,
+      });
     return;
   } catch (error) {
     res.status(403).json({ message: "Invalid refresh token" });
@@ -198,17 +207,35 @@ export const refreshToken = async (req: Request, res: Response) => {
   }
 };
 
-export const verifyToken = (req: Request, res: Response) => {
-  const accessToken = req.cookies.accessToken; // Assuming you stored the token in a cookie
-
-  if (!accessToken) {
-    res.status(401).json({ message: "No token provided" });
-    return;
-  }
-
+export const verifyToken = async (req: Request, res: Response) => {
   try {
-    const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
-    res.status(200).json({ message: "Token is valid", user: decoded });
+    const accessToken = req.cookies.accessToken;
+    if (!accessToken) {
+      res.status(401).json({ message: "No token provided" });
+      return;
+    }
+
+    const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as {
+      id: string;
+      role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
+    };
+    const userId = decoded.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(403).json({ message: "User not found" });
+      return;
+    }
+    const userDetails = {
+      _id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      image: user.image,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      role: user.role,
+    };
+    res.status(200).json({ message: "Token is valid", user: userDetails });
     return;
   } catch (error: any) {
     res.status(401).json({ message: "Invalid token", error: error.message });
