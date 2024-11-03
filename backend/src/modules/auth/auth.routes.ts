@@ -35,7 +35,8 @@ router.patch(
   authorizeAdmin,
   updateUserRoleById
 );
-router.post("/refresh-token", refreshToken);
-router.get("/logout", logout);
-router.get("/verify-token", verifyToken);
+// router.post("/refresh-token", refreshToken);
+// router.get("/logout", logout);
+// router.get("/verify-token", verifyToken);
+
 export default router;
