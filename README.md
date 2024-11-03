@@ -86,3 +86,10 @@ POST /api/payments/retry
 POST /api/support/ticket
 GET /api/support/tickets
 PATCH /api/support/tickets/{id}
+
+# how to use
+
+- git clone https://github.com/durlavkalita/neophilic.git
+- cd neophilic
+- docker-compose up -d
+- docker-compose down (to stop)

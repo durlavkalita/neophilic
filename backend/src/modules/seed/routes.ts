@@ -7,7 +7,7 @@ import { seedCategories, seedProducts, seedUsers } from "./scripts.js";
 
 const router = express.Router();
 
-router.get("/user", async (req: Request, res: Response) => {
+router.get("/users", async (req: Request, res: Response) => {
   try {
     await seedUsers();
     res.status(200).json({ message: "seed success" });
@@ -16,7 +16,7 @@ router.get("/user", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/category", async (req: Request, res: Response) => {
+router.get("/categories", async (req: Request, res: Response) => {
   try {
     await seedCategories();
     res.status(200).json({ message: "seed success" });
@@ -25,7 +25,7 @@ router.get("/category", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/product", async (req: Request, res: Response) => {
+router.get("/products", async (req: Request, res: Response) => {
   try {
     await seedProducts();
     res.status(200).json({ message: "seed success" });

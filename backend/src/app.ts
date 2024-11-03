@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import "dotenv/config";
+import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { connectToMongoDB } from "./config/db.config.js";
 import authRoutes from "./modules/auth/auth.routes.js";
@@ -17,8 +18,22 @@ import { getRootDir } from "./utils/helpers.js";
 const app = express();
 
 // middleware setup
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Replace with your frontend URL
+    credentials: true, // Allows cookies to be sent with requests
+  })
+);
+
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');  // Specific origin
+//   res.setHeader('Access-Control-Allow-Credentials', 'true');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+//   next();
+// });
 app.use(express.json());
+app.use(cookieParser());
 
 connectToMongoDB();
 
@@ -31,8 +46,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/collections", collectionItemRoutes);
 app.use("/api/attributes", attributeRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes);
-app.use("/api/order", orderRoutes);
+app.use("/api/carts", cartRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/seed", seedRoutes);
 
 app.get("/", express.static(path.join(getRootDir(), "./uploads/products")));

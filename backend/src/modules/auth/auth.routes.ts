@@ -3,9 +3,12 @@ import { validateLogin, validateRegister } from "./auth.validators.js";
 import {
   getUserById,
   loginUser,
+  logout,
+  refreshToken,
   registerUser,
   updateUserById,
   updateUserRoleById,
+  verifyToken,
 } from "./auth.controller.js";
 import {
   authenticate,
@@ -32,5 +35,7 @@ router.patch(
   authorizeAdmin,
   updateUserRoleById
 );
-
+router.post("/refresh-token", refreshToken);
+router.get("/logout", logout);
+router.get("/verify-token", verifyToken);
 export default router;

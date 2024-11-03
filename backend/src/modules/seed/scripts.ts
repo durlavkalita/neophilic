@@ -75,11 +75,10 @@ export const seedProducts = async () => {
     const product = new Product({
       name: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
-      base_price: faker.commerce.price(),
-      current_price: faker.commerce.price(),
+      basePrice: faker.commerce.price(),
+      currentPrice: faker.commerce.price(),
       sku: faker.vehicle.vin(),
       currentStock: faker.number.int({ min: 1, max: 100 }),
-      thumbnailId: faker.vehicle.vin(), // Placeholder for image ID
       category: categories[i % categories.length]._id, // Assign a category from the list
     });
     products.push(product);
