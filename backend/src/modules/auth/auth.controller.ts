@@ -178,20 +178,10 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 export const verifyToken = async (req: Request, res: Response) => {
   try {
-    const accessToken = req.cookies.accessToken;
-    if (!accessToken) {
-      res.status(401).json({ message: "No token provided" });
-      return;
-    }
-
-    const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as {
-      id: string;
-      role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
-    };
-    const userId = decoded.id;
-    const user = await User.findById(userId);
+    const id = req.user?.id;
+    const user = await User.findById(id);
     if (!user) {
-      res.status(403).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found." });
       return;
     }
     const userDetails = {
@@ -204,10 +194,10 @@ export const verifyToken = async (req: Request, res: Response) => {
       address: user.address,
       role: user.role,
     };
-    res.status(200).json({ message: "Token is valid", user: userDetails });
+    res.status(200).json({ message: "Successful", data: userDetails });
     return;
   } catch (error: any) {
-    res.status(401).json({ message: "Invalid token", error: error.message });
+    res.status(500).json({ error: error.message });
     return;
   }
 };

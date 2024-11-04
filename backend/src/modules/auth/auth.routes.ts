@@ -37,6 +37,6 @@ router.patch(
 );
 // router.post("/refresh-token", refreshToken);
 // router.get("/logout", logout);
-// router.get("/verify-token", verifyToken);
+router.get("/verify-token", authenticate, verifyToken);
 
 export default router;
