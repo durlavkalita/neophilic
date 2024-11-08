@@ -2,13 +2,37 @@ import { Request, Response } from "express";
 import { Category } from "./categories.model.js";
 
 export const getAllCategories = async (req: Request, res: Response) => {
-  try {
-    const categories = await Category.find();
-    res.status(200).json({ message: "Successful", data: categories });
-    return;
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-    return;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  if (!page && !limit) {
+    try {
+      const categories = await Category.find();
+      res.status(200).json({ message: "Successful", data: categories });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+  } else {
+    try {
+      const skip = (page - 1) * limit;
+      const categories = await Category.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      const total = await Category.countDocuments();
+      res.status(200).json({
+        message: "Successful",
+        data: categories,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        totalItems: total,
+      });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching categories", error });
+      return;
+    }
   }
 };
 

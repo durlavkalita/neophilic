@@ -2,20 +2,39 @@ import { Request, Response } from "express";
 import { Order } from "./orders.model.js";
 import { InventoryHistory } from "../inventory/inventory.model.js";
 import { Product } from "../products/products.model.js";
-import mongoose from "mongoose";
 
 export const getAllOrders = async (req: Request, res: Response) => {
-  try {
-    const order = await Order.find();
-    if (!order) {
-      res.status(404).json({ message: "Order not found" });
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  if (!page && !limit) {
+    try {
+      const orders = await Order.find();
+      res.status(200).json({ message: "Successful", data: orders });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
       return;
     }
-    res.status(200).json({ message: "Successful", data: order });
-    return;
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-    return;
+  } else {
+    try {
+      const skip = (page - 1) * limit;
+      const orders = await Order.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      const total = await Order.countDocuments();
+      res.status(200).json({
+        message: "Successful",
+        data: orders,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        totalItems: total,
+      });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching orders", error });
+      return;
+    }
   }
 };
 

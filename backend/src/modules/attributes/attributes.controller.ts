@@ -3,13 +3,37 @@ import { Attribute } from "./attributes.model.js";
 
 // Get all attributes
 export const getAllAttributes = async (req: Request, res: Response) => {
-  try {
-    const attributes = await Attribute.find();
-    res.status(200).json({ message: "Successful", data: attributes });
-    return;
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-    return;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  if (!page && !limit) {
+    try {
+      const attributes = await Attribute.find();
+      res.status(200).json({ message: "Successful", data: attributes });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+  } else {
+    try {
+      const skip = (page - 1) * limit;
+      const attributes = await Attribute.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      const total = await Attribute.countDocuments();
+      res.status(200).json({
+        message: "Successful",
+        data: attributes,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        totalItems: total,
+      });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching attributes", error });
+      return;
+    }
   }
 };
 

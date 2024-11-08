@@ -2,13 +2,39 @@ import { Request, Response } from "express";
 import { CollectionItem } from "./collections.model.js";
 
 export const getAllCollectionItems = async (req: Request, res: Response) => {
-  try {
-    const collectionItems = await CollectionItem.find().populate("products");
-    res.status(200).json({ message: "Successful", data: collectionItems });
-    return;
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-    return;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  if (!page && !limit) {
+    try {
+      const collectionItems = await CollectionItem.find();
+      res.status(200).json({ message: "Successful", data: collectionItems });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+  } else {
+    try {
+      const skip = (page - 1) * limit;
+      const collectionItems = await CollectionItem.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      const total = await CollectionItem.countDocuments();
+      res.status(200).json({
+        message: "Successful",
+        data: collectionItems,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        totalItems: total,
+      });
+      return;
+    } catch (error: any) {
+      res
+        .status(500)
+        .json({ message: "Error fetching collectionItems", error });
+      return;
+    }
   }
 };
 
