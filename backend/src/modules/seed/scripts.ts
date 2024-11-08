@@ -1,5 +1,4 @@
 import { faker } from "@faker-js/faker";
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import { User } from "../auth/auth.model.js";
 import { Product } from "../products/products.model.js";
@@ -25,7 +24,7 @@ export const seedUsers = async () => {
 
   // Create a few vendor and user entries
   const users = [adminUser];
-  const roles = ["VENDOR", "USER"];
+  const roles = ["VENDOR", "USER", "USER_PRO"];
 
   for (let i = 0; i < 10; i++) {
     const role = roles[i % roles.length];
@@ -49,11 +48,26 @@ export const seedUsers = async () => {
 
 export const seedCategories = async () => {
   await Category.deleteMany({});
-
+  const defaultCategories = [
+    "Lighting",
+    "Consumer Durables",
+    "Home and Kitchenware",
+    "Tools",
+    "Paints",
+    "Bath & Sanitary",
+    "Tiles & Flooring",
+    "Digital Locks & Safes",
+    "Hardware",
+    "Kitchen & Sink",
+    "Plywood & Laminates",
+    "MDF & HDF",
+    "Doors & WIndows",
+    "Home Decor",
+  ];
   const categories = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 14; i++) {
     const category = new Category({
-      name: faker.commerce.department(),
+      name: defaultCategories[i],
       description: faker.lorem.sentence(),
     });
     categories.push(category);
@@ -71,15 +85,16 @@ export const seedProducts = async () => {
   await Product.deleteMany({});
 
   const products = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
+    const price = faker.commerce.price({ dec: 0 });
     const product = new Product({
       name: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
-      basePrice: faker.commerce.price(),
-      currentPrice: faker.commerce.price(),
+      basePrice: price,
+      currentPrice: price,
       sku: faker.vehicle.vin(),
-      currentStock: faker.number.int({ min: 1, max: 100 }),
-      category: categories[i % categories.length]._id, // Assign a category from the list
+      stock: faker.number.int({ min: 1, max: 100 }),
+      category: categories[i % categories.length]._id,
     });
     products.push(product);
   }

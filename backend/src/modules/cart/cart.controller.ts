@@ -19,7 +19,7 @@ export const getCart = async (req: Request, res: Response) => {
 
 export const addToCart = async (req: Request, res: Response) => {
   const userId = req.user?.id;
-  const { productId, quantity, priceAtTime } = req.body;
+  const { productId, quantity } = req.body;
 
   try {
     let cart = await Cart.findOne({
@@ -32,7 +32,6 @@ export const addToCart = async (req: Request, res: Response) => {
         user: userId,
         product: productId,
         quantity,
-        priceAtTime,
       });
 
       await newCart.save();

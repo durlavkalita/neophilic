@@ -1,6 +1,6 @@
 "use client";
 
-import { loginService } from "@/app/services/authServices";
+import { loginService } from "@/services/authServices";
 import LoadingSpinner from "@/components/loading-spinner";
 import { useAuth } from "@/providers/auth-provider";
 import { useState } from "react";

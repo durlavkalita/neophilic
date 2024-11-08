@@ -46,7 +46,7 @@ export const createOrder = async (req: Request, res: Response) => {
         return;
       }
 
-      if (product.currentStock < quantity) {
+      if (product.stock < quantity) {
         res
           .status(400)
           .json({ error: `Insufficient stock for product ID ${productId}.` });
@@ -54,7 +54,7 @@ export const createOrder = async (req: Request, res: Response) => {
       }
 
       // Update product stock
-      product.currentStock -= quantity;
+      product.stock -= quantity;
       console.log(product);
 
       await product.save();
@@ -63,7 +63,7 @@ export const createOrder = async (req: Request, res: Response) => {
       await InventoryHistory.create([
         {
           productId,
-          quantityChanged: product.currentStock - quantity, // Stock decreases in sale
+          quantityChanged: product.stock - quantity, // Stock decreases in sale
           type: "SALE",
           referenceId: null,
           notes: "Product Sale",
@@ -71,7 +71,7 @@ export const createOrder = async (req: Request, res: Response) => {
       ]);
 
       // Calculate total price
-      totalAmount += quantity * Number(priceAtTime);
+      totalAmount += quantity * Number(product.currentPrice);
     }
 
     // Create the order
@@ -183,7 +183,7 @@ export const cancelOrder = async (req: Request, res: Response) => {
       // Update product's current stock
       const product = await Product.findById(productId);
       if (product) {
-        product.currentStock += quantity;
+        product.stock += quantity;
         await product.save();
 
         // Record the inventory update

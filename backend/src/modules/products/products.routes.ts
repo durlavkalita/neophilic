@@ -25,10 +25,7 @@ router.post(
   "/",
   authenticate,
   authorizeAdmin,
-  uploadProductImage.fields([
-    { name: "mainFile", maxCount: 1 },
-    { name: "files", maxCount: 5 },
-  ]),
+  uploadProductImage.array("files"),
   createProduct
 );
 router.put("/:id", authenticate, authorizeAdmin, updateProductById);

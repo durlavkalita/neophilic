@@ -4,113 +4,70 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
-import { FaFilter } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import Link from "next/link";
+import { getAllProducts, getSearchedProduct } from "@/services/productServices";
 
-// Mock product data
-const initialProducts = [
-  {
-    id: 1,
-    name: "Product 1",
-    price: 19.99,
-    sku: "SKU001",
-    stock: 100,
-    status: "enabled",
-    image: "/placeholder.svg?height=50&width=50",
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    price: 29.99,
-    sku: "SKU002",
-    stock: 75,
-    status: "disabled",
-    image: "/placeholder.svg?height=50&width=50",
-  },
-  {
-    id: 3,
-    name: "Product 3",
-    price: 39.99,
-    sku: "SKU003",
-    stock: 50,
-    status: "enabled",
-    image: "/placeholder.svg?height=50&width=50",
-  },
-  {
-    id: 4,
-    name: "Product 4",
-    price: 49.99,
-    sku: "SKU004",
-    stock: 25,
-    status: "enabled",
-    image: "/placeholder.svg?height=50&width=50",
-  },
-  {
-    id: 5,
-    name: "Product 5",
-    price: 59.99,
-    sku: "SKU005",
-    stock: 0,
-    status: "disabled",
-    image: "/placeholder.svg?height=50&width=50",
-  },
-  // Add more products to test pagination
-  ...Array.from({ length: 20 }, (_, i) => ({
-    id: i + 6,
-    name: `Product ${i + 6}`,
-    price: Math.round(Math.random() * 100 + 10),
-    sku: `SKU00${i + 6}`,
-    stock: Math.round(Math.random() * 100),
-    status: Math.random() > 0.5 ? "enabled" : "disabled",
-    image: "/placeholder.svg?height=50&width=50",
-  })),
-];
-
-export default function ProductPage() {
-  const [products, setProducts] = useState(initialProducts);
+export default function Page() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const filtered = initialProducts.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.sku.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setProducts(filtered);
+    console.log(e);
+
+    if (searchTerm == "") return;
+    await fetchSearchedProducts(searchTerm, currentPage, itemsPerPage);
     setCurrentPage(1);
   };
-
-  const handleFilter = (status: string) => {
-    setStatusFilter(status);
-    if (status === "all") {
-      setProducts(initialProducts);
-    } else {
-      const filtered = initialProducts.filter(
-        (product) => product.status === status
-      );
-      setProducts(filtered);
-    }
-    setCurrentPage(1);
-  };
-
-  // Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(products.length / itemsPerPage);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
+  const fetchSearchedProducts = async (
+    searchTerm: string,
+    currentPage: number,
+    itemsPerPage: number
+  ) => {
+    try {
+      const data = await getSearchedProduct(
+        searchTerm,
+        String(currentPage),
+        String(itemsPerPage)
+      );
+      setProducts(data.data);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchProducts = async (currentPage: number, itemsPerPage: number) => {
+    try {
+      const data = await getAllProducts(
+        String(currentPage),
+        String(itemsPerPage)
+      );
+      setProducts(data.data);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    setCurrentPage(1);
-  }, [itemsPerPage]);
+    const controller = new AbortController();
+
+    if (searchTerm == "") {
+      fetchProducts(currentPage, itemsPerPage);
+    } else {
+      fetchSearchedProducts(searchTerm, currentPage, itemsPerPage);
+    }
+
+    return function () {
+      controller.abort();
+    };
+  }, [currentPage, itemsPerPage]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -119,7 +76,7 @@ export default function ProductPage() {
         <Link href={"/dashboard/products/new"}>
           <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
             <FaPlus />
-            Add Product
+            <span className="ml-2 font-medium">Add Product</span>
           </div>
         </Link>
       </div>
@@ -143,7 +100,7 @@ export default function ProductPage() {
           </div>
         </form>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <FaFilter />
           <select
             className="border rounded-md px-2 py-1"
@@ -154,7 +111,18 @@ export default function ProductPage() {
             <option value="enabled">Enabled</option>
             <option value="disabled">Disabled</option>
           </select>
-        </div>
+        </div> */}
+        <span
+          onClick={() => {
+            setSearchTerm("");
+            setCurrentPage(1);
+            setItemsPerPage(10);
+            // fetchProducts(currentPage, itemsPerPage);
+          }}
+          className="text-blue-500 hover:underline text-sm cursor-pointer"
+        >
+          Clear filter
+        </span>
       </div>
 
       <div className="overflow-x-auto">
@@ -170,33 +138,37 @@ export default function ProductPage() {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
+            {products.map((product) => (
+              <tr key={product._id} className="hover:bg-gray-50">
                 <td className="py-2 px-4 border-b">
                   <Image
-                    src={product.image}
+                    // src={`http://localhost:5000/uploads/products/${product.images[0]}`}
+                    src={`/logo.jpeg`}
                     alt={product.name}
                     className="w-12 h-12 object-cover rounded"
                     width={50}
                     height={50}
                   />
                 </td>
-                <td className="py-2 px-4 border-b">{product.name}</td>
                 <td className="py-2 px-4 border-b">
-                  ${product.price.toFixed(2)}
+                  <Link
+                    href={`/dashboard/products/${product._id}`}
+                    className="hover:underline"
+                  >
+                    {product.name}
+                  </Link>
                 </td>
+                <td className="py-2 px-4 border-b">₹{product.basePrice}</td>
                 <td className="py-2 px-4 border-b">{product.sku}</td>
-                <td className="py-2 px-4 border-b">{product.stock}</td>
+                <td className="py-2 px-4 border-b">{product.currentStock}</td>
                 <td className="py-2 px-4 border-b">
                   <span
-                    className={`px-2 py-1 rounded ${
-                      product.status === "enabled"
-                        ? "bg-green-200 text-green-800"
-                        : "bg-red-200 text-red-800"
+                    className={`ml-4 inline-block w-3 h-3 rounded-full ${
+                      product.status === "ENABLED"
+                        ? "bg-green-500"
+                        : "bg-red-500"
                     }`}
-                  >
-                    {product.status}
-                  </span>
+                  ></span>
                 </td>
               </tr>
             ))}
@@ -217,7 +189,7 @@ export default function ProductPage() {
             <button
               key={number}
               onClick={() => paginate(number)}
-              className={`px-3 py-1 border rounded hover:bg-gray-100 ${
+              className={`px-3 py-1 border rounded hover:bg-gray-300 ${
                 currentPage === number ? "bg-blue-500 text-white" : ""
               }`}
             >

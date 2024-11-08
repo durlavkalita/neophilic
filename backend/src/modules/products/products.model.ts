@@ -3,18 +3,15 @@ import { Document, Schema, Types, model } from "mongoose";
 export interface IProduct extends Document {
   name: string;
   description: string;
-  basePrice: string;
-  currentPrice: string;
+  basePrice: number;
+  currentPrice: number;
   sku: string;
-  currentStock: number;
-  mainImage: string;
-  images: string[];
+  stock: number;
+  images: string[] | null;
   category: Types.ObjectId;
-  attributes: {
-    name: string;
-    value: string;
-  }[];
+  attributes: {};
   status: "ENABLED" | "DISABLED";
+  rating: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,21 +20,18 @@ const ProductSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    basePrice: { type: String, required: true },
-    currentPrice: { type: String, required: true },
-    sku: { type: String, required: true },
-    currentStock: { type: Number, default: 0 },
-    mainImage: { type: String },
+    basePrice: { type: Number, required: true },
+    currentPrice: { type: Number, required: true },
+    sku: { type: String, required: true, unique: true },
+    stock: { type: Number, default: 0 },
     images: [{ type: String }],
-    category: { type: Schema.Types.ObjectId, ref: "Category" },
-    attributes: [
-      {
-        name: String,
-        value: String,
-        _id: false,
-      },
-    ],
+    category: { type: Schema.Types.ObjectId, ref: "Category", index: true },
+    attributes: {
+      type: Map,
+      of: String,
+    },
     status: { type: String, enum: ["ENABLED", "DISABLED"], default: "ENABLED" },
+    rating: { type: Number },
   },
   {
     timestamps: true,

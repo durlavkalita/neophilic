@@ -1,8 +1,4 @@
 import express, { Request, Response } from "express";
-import {
-  authenticate,
-  authorizeAdmin,
-} from "../../middleware/auth.middleware.js";
 import { seedCategories, seedProducts, seedUsers } from "./scripts.js";
 
 const router = express.Router();

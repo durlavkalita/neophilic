@@ -2,7 +2,7 @@ import { Schema, Document, Types, model } from "mongoose";
 
 export interface IOrder extends Document {
   user: Schema.Types.ObjectId;
-  totalAmount: string;
+  totalAmount: number;
   items: any[];
   paymentStatus: "PENDING" | "PAID" | "FAILED";
   paymentMethod: "CREDIT_CARD" | "UPI" | "COD";
@@ -16,13 +16,11 @@ export interface IOrder extends Document {
 const OrderSchema = new Schema<IOrder>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    totalAmount: { type: String, required: true },
+    totalAmount: { type: Number, default: 0 },
     items: [
       {
         productId: { type: Schema.Types.ObjectId, ref: "Product" },
-
         quantity: { type: Number },
-        priceAtTime: { type: String },
         _id: false,
       },
     ],

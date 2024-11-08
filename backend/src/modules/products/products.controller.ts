@@ -11,13 +11,12 @@ export const createProduct = async (req: Request, res: Response) => {
     const currentPrice = req.body.currentPrice;
     const sku = req.body.sku;
     const category = req.body.category;
-    const currentStock = Number(req.body.currentStock);
+    const stock = Number(req.body.stock);
     const attributes = req.body.attributes;
 
     const parsedAttributes = JSON.parse(attributes);
 
-    const mainImage = (req.files as any).mainFile[0].filename;
-    const images = (req.files as any).files.map(
+    const images = (req.files as any).map(
       (item: { filename: any }) => item.filename
     );
 
@@ -27,17 +26,17 @@ export const createProduct = async (req: Request, res: Response) => {
       basePrice,
       currentPrice,
       sku,
-      currentStock,
+      stock,
       attributes: parsedAttributes,
       category,
-      mainImage,
       images,
     });
+
     const savedProduct = await newProduct.save();
 
     const inventoryEntry = new InventoryHistory({
       productId: savedProduct._id,
-      quantityChanged: savedProduct.currentStock,
+      quantityChanged: savedProduct.stock,
       type: "PURCHASE",
       referenceId: null,
       notes: "Product Created",
@@ -55,9 +54,23 @@ export const createProduct = async (req: Request, res: Response) => {
 };
 
 export const getAllProducts = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
   try {
-    const products = await Product.find().populate("category");
-    res.status(200).json({ message: "Successful", data: products });
+    const skip = (page - 1) * limit;
+    const products = await Product.find()
+      .populate("category")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const total = await Product.countDocuments();
+    res.status(200).json({
+      message: "Successful",
+      data: products,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      totalItems: total,
+    });
     return;
   } catch (error: any) {
     res.status(500).json({ message: "Error fetching products", error });
@@ -94,10 +107,10 @@ export const updateProductById = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Product not found" });
       return;
     }
-    if ("currentStock" in updates) {
+    if ("stock" in updates) {
       const inventoryEntry = new InventoryHistory({
         productId: updatedProduct._id,
-        quantityChanged: updatedProduct.currentStock,
+        quantityChanged: updatedProduct.stock,
         type: "STOCK_ADJUSTMENT",
         referenceId: null,
         notes: "Inventory Updated",
@@ -201,20 +214,35 @@ export const updateProductStatus = async (req: Request, res: Response) => {
 };
 
 export const searchProducts = async (req: Request, res: Response) => {
-  const { query } = req.query;
+  const keyword = req.query.keyword as string;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
 
-  if (!query) {
+  if (!keyword) {
     res.status(400).json({ message: "Search query is required." });
     return;
   }
 
   try {
-    // Find products where 'name' matches the search term, case-insensitive
+    const skip = (page - 1) * limit;
     const products = await Product.find({
-      name: { $regex: query as string, $options: "i" },
+      name: { $regex: keyword as string, $options: "i" },
+    })
+      .populate("category")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const total = await Product.countDocuments({
+      name: { $regex: keyword as string, $options: "i" },
     });
 
-    res.status(200).json({ message: "Successful", data: products });
+    res.status(200).json({
+      message: "Successful",
+      data: products,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      totalItems: total,
+    });
     return;
   } catch (error: any) {
     res.status(500).json({ message: "Server error. Please try again later." });

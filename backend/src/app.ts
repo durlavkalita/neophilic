@@ -12,18 +12,17 @@ import productRoutes from "./modules/products/products.routes.js";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import orderRoutes from "./modules/orders/orders.routes.js";
 import seedRoutes from "./modules/seed/routes.js";
-import path from "path";
-import { getRootDir } from "./utils/helpers.js";
 
 const app = express();
 
 // middleware setup
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Replace with your frontend URL
-    credentials: true, // Allows cookies to be sent with requests
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     credentials: true, // Allows cookies to be sent with requests
+//   })
+// );
+app.use(cors());
 
 // app.use((req, res, next) => {
 //   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');  // Specific origin
@@ -50,9 +49,15 @@ app.use("/api/carts", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/seed", seedRoutes);
 
-app.get("/", express.static(path.join(getRootDir(), "./uploads/products")));
-app.get("/", express.static(path.join(getRootDir(), "./uploads/users")));
-
+// app.use(
+//   "/uploads/products",
+//   express.static(path.join(getRootDir(), "/dist/uploads/products"))
+// );
+// app.use(
+//   "/uploads/users",
+//   express.static(path.join(getRootDir(), "/uploads/users"))
+// );
+app.use(express.static("uploads/products"));
 app.use(errorHandler);
 
 export default app;
