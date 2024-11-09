@@ -2,9 +2,24 @@ import { getToken } from "@/lib/utils";
 
 const apiBaseUrl = process.env.BACKEND_URI || "http://localhost:5000/api";
 
-export async function getAllProducts(page: string, limit: string) {
+export async function getAllProducts(page?: string, limit?: string) {
   const response = await fetch(
     `${apiBaseUrl}/products?page=${page}&limit=${limit}`,
+    {
+      method: "GET",
+    }
+  );
+  const data = response.json();
+  return data;
+}
+
+export async function getSearchedProduct(
+  keyword: string,
+  page?: string,
+  limit?: string
+) {
+  const response = await fetch(
+    `${apiBaseUrl}/products/search/name?keyword=${keyword}&page=${page}&limit=${limit}`,
     {
       method: "GET",
     }
@@ -52,21 +67,6 @@ export async function deleteProductById(id: string) {
       Authorization: `Bearer ${getToken()}`,
     },
   });
-  const data = response.json();
-  return data;
-}
-
-export async function getSearchedProduct(
-  keyword: string,
-  page: string,
-  limit: string
-) {
-  const response = await fetch(
-    `${apiBaseUrl}/products/search/name?keyword=${keyword}&page=${page}&limit=${limit}`,
-    {
-      method: "GET",
-    }
-  );
   const data = response.json();
   return data;
 }

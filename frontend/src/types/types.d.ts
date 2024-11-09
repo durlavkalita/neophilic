@@ -17,7 +17,7 @@ declare interface Product {
   basePrice: string;
   currentPrice: string;
   sku: string;
-  currentStock: number;
+  stock: number;
   images: string[];
   category: {
     _id: string;
@@ -25,4 +25,26 @@ declare interface Product {
   };
   attributes: object;
   status: "ENABLED" | "DISABLED";
+}
+
+declare interface CollectionItem {
+  _id: string;
+  name: string;
+  description: string;
+  startDate?: Date;
+  endDate?: Date;
+  products: Product[];
+}
+
+declare interface User {
+  _id: string;
+  email: string;
+  role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  address: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
 }

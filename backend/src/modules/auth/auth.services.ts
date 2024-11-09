@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { IUser, User } from "./auth.model.js";
+import { User } from "./auth.model.js";
 import { generateAccessToken, generateRefreshToken } from "./auth.helpers.js";
 
 interface AuthResponse {

@@ -128,7 +128,7 @@ export default function Page() {
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-blue-200">
               <th className="py-2 px-4 border-b text-left">Thumbnail</th>
               <th className="py-2 px-4 border-b text-left">Name</th>
               <th className="py-2 px-4 border-b text-left">Price</th>
@@ -138,8 +138,13 @@ export default function Page() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product._id} className="hover:bg-gray-50">
+            {products.map((product, index) => (
+              <tr
+                key={product._id}
+                className={`hover:bg-blue-200 ${
+                  index % 2 == 0 ? "bg-blue-50" : "bg-blue-100"
+                }`}
+              >
                 <td className="py-2 px-4 border-b">
                   <Image
                     // src={`http://localhost:5000/uploads/products/${product.images[0]}`}
@@ -160,7 +165,7 @@ export default function Page() {
                 </td>
                 <td className="py-2 px-4 border-b">₹{product.basePrice}</td>
                 <td className="py-2 px-4 border-b">{product.sku}</td>
-                <td className="py-2 px-4 border-b">{product.currentStock}</td>
+                <td className="py-2 px-4 border-b">{product.stock}</td>
                 <td className="py-2 px-4 border-b">
                   <span
                     className={`ml-4 inline-block w-3 h-3 rounded-full ${

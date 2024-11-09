@@ -2,19 +2,26 @@ import { getToken } from "@/lib/utils";
 
 const apiBaseUrl = process.env.BACKEND_URI || "http://localhost:5000/api";
 
-export async function getAllAttributes() {
-  const response = await fetch(`${apiBaseUrl}/attributes`, {
-    method: "GET",
-  });
+export async function getAllAttributes(page?: string, limit?: string) {
+  const response = await fetch(
+    `${apiBaseUrl}/attributes?page=${page}&limit=${limit}`,
+    {
+      method: "GET",
+    }
+  );
   const data = response.json();
   return data;
 }
 
-export async function createAttribute(formData: FormData) {
+export async function createAttribute(reqBody: {
+  name: string;
+  values: string[];
+}) {
   const response = await fetch(`${apiBaseUrl}/attributes`, {
     method: "POST",
-    body: formData,
+    body: JSON.stringify(reqBody),
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
     },
   });
@@ -30,11 +37,18 @@ export async function getAttributeById(id: string) {
   return data;
 }
 
-export async function updateAttributeById(id: string, formData: FormData) {
+export async function updateAttributeById(
+  id: string,
+  reqBody: {
+    name: string;
+    values: string[];
+  }
+) {
   const response = await fetch(`${apiBaseUrl}/attributes/${id}`, {
     method: "PUT",
-    body: formData,
+    body: JSON.stringify(reqBody),
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
     },
   });

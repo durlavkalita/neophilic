@@ -50,7 +50,7 @@ export default function Page() {
     formData.append("currentPrice", price);
     formData.append("description", description);
     formData.append("category", productCategory);
-    formData.append("currentStock", stock);
+    formData.append("stock", stock);
     formData.append("attributes", JSON.stringify(productAttributes));
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
@@ -102,7 +102,7 @@ export default function Page() {
         setDescription(productData.description);
         setProductCategory(productData.category._id);
         setProductStatus(productData.status);
-        setStock(productData.currentStock);
+        setStock(productData.stock);
         setProductAttributes(productData.attributes);
       } catch (error) {
         console.log(error);
@@ -111,8 +111,6 @@ export default function Page() {
     fetchCategories();
     fetchAttributes();
     if (productId != "new") {
-      console.log("here");
-
       fetchProductById();
     }
     return function () {

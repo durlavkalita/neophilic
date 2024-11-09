@@ -9,3 +9,14 @@ export function setToken(token: string) {
 export function removeToken() {
   localStorage.removeItem("accessToken");
 }
+
+export function humanReadableDate(dateString: string) {
+  const date = new Date(dateString);
+
+  const formattedDate = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  return formattedDate;
+}

@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
 import * as authService from "./auth.services.js";
 import { User } from "./auth.model.js";
-import jwt from "jsonwebtoken";
-import {
-  ACCESS_TOKEN_SECRET,
-  generateAccessToken,
-  REFRESH_TOKEN_SECRET,
-} from "./auth.helpers.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -35,7 +29,7 @@ export const loginUser = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
     if (!user) {
       res.status(404).json({ message: "User not found." });
       return;
@@ -78,22 +72,13 @@ export const updateUserById = async (req: Request, res: Response) => {
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
       new: true,
-    });
+    }).select("-password");
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    const userDetails = {
-      _id: updatedUser._id,
-      email: updatedUser.email,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      image: updatedUser.image,
-      phoneNumber: updatedUser.phoneNumber,
-      address: updatedUser.address,
-      role: updatedUser.role,
-    };
-    res.status(200).json({ message: "Successful", data: userDetails });
+
+    res.status(200).json({ message: "Successful", data: updatedUser });
     return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -113,7 +98,7 @@ export const updateUserRoleById = async (req: Request, res: Response) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -126,75 +111,15 @@ export const updateUserRoleById = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshToken = async (req: Request, res: Response) => {
-  try {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-      res.status(401).json({ message: "Refresh token not found" });
-      return;
-    }
-
-    const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as {
-      id: string;
-      role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
-    };
-    const userId = decoded.id;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(403).json({ message: "User not found" });
-      return;
-    }
-
-    const newAccessToken = generateAccessToken(user);
-
-    res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: false,
-      // secure: process.env.NODE_ENV === "production", // Secure flag for HTTPS in production
-      // sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 15 minutes expiration
-    });
-    const userDetails = {
-      _id: user._id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      image: user.image,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      role: user.role,
-    };
-    res.status(200).json({
-      message: "Access token refreshed successfully",
-      user: userDetails,
-    });
-    return;
-  } catch (error) {
-    res.status(403).json({ message: "Invalid refresh token" });
-    return;
-  }
-};
-
 export const verifyToken = async (req: Request, res: Response) => {
   try {
     const id = req.user?.id;
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
     if (!user) {
       res.status(404).json({ message: "User not found." });
       return;
     }
-    const userDetails = {
-      _id: user._id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      image: user.image,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      role: user.role,
-    };
-    res.status(200).json({ message: "Successful", data: userDetails });
+    res.status(200).json({ message: "Successful", data: user });
     return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -202,11 +127,27 @@ export const verifyToken = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = (req: Request, res: Response) => {
-  // Set cookies to expire immediately
-  res.clearCookie("accessToken", { httpOnly: true, secure: false });
-  res.clearCookie("refreshToken", { httpOnly: true, secure: false });
-
-  res.status(200).json({ message: "Logged out successfully" });
-  return;
+export const getAllUsers = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  try {
+    const skip = (page - 1) * limit;
+    const users = await User.find()
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const total = await User.countDocuments();
+    res.status(200).json({
+      message: "Successful",
+      data: users,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      totalItems: total,
+    });
+    return;
+  } catch (error: any) {
+    res.status(500).json({ message: "Error fetching products", error });
+    return;
+  }
 };

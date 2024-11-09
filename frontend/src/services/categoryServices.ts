@@ -2,19 +2,26 @@ import { getToken } from "@/lib/utils";
 
 const apiBaseUrl = process.env.BACKEND_URI || "http://localhost:5000/api";
 
-export async function getAllCategories() {
-  const response = await fetch(`${apiBaseUrl}/categories`, {
-    method: "GET",
-  });
+export async function getAllCategories(page?: string, limit?: string) {
+  const response = await fetch(
+    `${apiBaseUrl}/categories?page=${page}&limit=${limit}`,
+    {
+      method: "GET",
+    }
+  );
   const data = response.json();
   return data;
 }
 
-export async function createCategory(formData: FormData) {
+export async function createCategory(reqBody: {
+  name: string;
+  description: string;
+}) {
   const response = await fetch(`${apiBaseUrl}/categories`, {
     method: "POST",
-    body: formData,
+    body: JSON.stringify(reqBody),
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
     },
   });
@@ -30,11 +37,18 @@ export async function getCategoryById(id: string) {
   return data;
 }
 
-export async function updateCategoryById(id: string, formData: FormData) {
+export async function updateCategoryById(
+  id: string,
+  reqBody: {
+    name: string;
+    description: string;
+  }
+) {
   const response = await fetch(`${apiBaseUrl}/categories/${id}`, {
     method: "PUT",
-    body: formData,
+    body: JSON.stringify(reqBody),
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
     },
   });

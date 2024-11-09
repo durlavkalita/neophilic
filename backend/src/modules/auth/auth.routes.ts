@@ -1,10 +1,9 @@
 import express from "express";
 import { validateLogin, validateRegister } from "./auth.validators.js";
 import {
+  getAllUsers,
   getUserById,
   loginUser,
-  logout,
-  refreshToken,
   registerUser,
   updateUserById,
   updateUserRoleById,
@@ -21,22 +20,21 @@ const router = express.Router();
 
 router.post("/register", validateRegister, registerUser);
 router.post("/login", validateLogin, loginUser);
-router.get("/user/:id", authenticate, getUserById);
+router.get("/users/:id", authenticate, getUserById);
+router.get("/users", authenticate, authorizeAdmin, getAllUsers);
 router.put(
-  "/user/:id",
+  "/users/:id",
   authenticate,
   authorizeUser,
   uploadUserImage.single("files"),
   updateUserById
 );
 router.patch(
-  "/user/:id/role",
+  "/users/:id/role",
   authenticate,
   authorizeAdmin,
   updateUserRoleById
 );
-// router.post("/refresh-token", refreshToken);
-// router.get("/logout", logout);
 router.get("/verify-token", authenticate, verifyToken);
 
 export default router;
