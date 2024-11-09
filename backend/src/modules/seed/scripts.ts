@@ -3,8 +3,10 @@ import bcrypt from "bcryptjs";
 import { User } from "../auth/auth.model.js";
 import { Product } from "../products/products.model.js";
 import { Category } from "../categories/categories.model.js";
+import { Attribute } from "../attributes/attributes.model.js";
+import { Cart } from "../cart/cart.model.js";
+import { Order } from "../orders/orders.model.js";
 
-// Seed data for users
 export const seedUsers = async () => {
   // Clear existing users
   await User.deleteMany({});
@@ -22,8 +24,18 @@ export const seedUsers = async () => {
     address: faker.location.streetAddress(),
   });
 
+  const testUser = new User({
+    email: "test@test.com",
+    password: hashedAdminPassword,
+    role: "USER",
+    firstName: "Test",
+    lastName: "User",
+    phoneNumber: faker.phone.number(),
+    address: faker.location.streetAddress(),
+  });
+
   // Create a few vendor and user entries
-  const users = [adminUser];
+  const users = [adminUser, testUser];
   const roles = ["VENDOR", "USER", "USER_PRO"];
 
   for (let i = 0; i < 10; i++) {
@@ -75,12 +87,35 @@ export const seedCategories = async () => {
 
   const savedCategories = await Category.insertMany(categories);
   console.log("Category data seeded successfully");
-  return savedCategories; // Return categories to link with products
+  return savedCategories;
+};
+
+export const seedAttributes = async () => {
+  await Attribute.deleteMany({});
+
+  const attributes = [];
+
+  for (let i = 0; i < 7; i++) {
+    const attributeName = faker.commerce.productMaterial().toLowerCase();
+    const attributeValues = Array.from(
+      { length: faker.number.int({ min: 2, max: 5 }) },
+      () => faker.color.human().toLowerCase()
+    );
+
+    attributes.push({
+      name: attributeName,
+      values: attributeValues,
+    });
+  }
+  const savedAttributes = await Attribute.insertMany(attributes);
+  console.log("Attribute data seeded successfully");
+
+  return savedAttributes;
 };
 
 export const seedProducts = async () => {
-  // First, seed categories and get their IDs
   const categories = await seedCategories();
+  const attributes = await seedAttributes();
 
   await Product.deleteMany({});
 
@@ -94,11 +129,83 @@ export const seedProducts = async () => {
       currentPrice: price,
       sku: faker.vehicle.vin(),
       stock: faker.number.int({ min: 1, max: 100 }),
-      category: categories[i % categories.length]._id,
+      categoryId: categories[i % categories.length]._id,
     });
     products.push(product);
   }
 
-  await Product.insertMany(products);
+  const savedProducts = await Product.insertMany(products);
   console.log("Product data seeded successfully");
+  return savedProducts;
+};
+
+export const seedCollections = async (
+  productIds: string[],
+  numCollections = 1
+) => {
+  const collections = [];
+
+  for (let i = 0; i < numCollections; i++) {
+    // Generate a random collection name and description
+    const collectionName = faker.commerce.department().toLowerCase(); // Example: "Winter"
+    const collectionDescription = `${collectionName} collection`;
+
+    // Select a random subset of product IDs for the collection
+    const numProducts = faker.number.int({ min: 1, max: productIds.length });
+    const selectedProducts = faker.helpers.arrayElements(
+      productIds,
+      numProducts
+    );
+
+    collections.push({
+      name: collectionName,
+      description: collectionDescription,
+      products: selectedProducts,
+    });
+  }
+
+  return collections;
+};
+
+export const seedCartsAndOrder = async () => {
+  const products = await seedProducts();
+  const productIds = products.map((item) => item._id);
+  console.log(productIds);
+
+  const carts = [];
+  const orders = [];
+  const user = await User.findOne({ email: "test@test.com" });
+  if (!user) return;
+
+  const userId = user._id;
+  for (let i = 0; i < 6; i++) {
+    const productId = faker.helpers.arrayElement(productIds);
+    const quantity = faker.number.int({ min: 1, max: 10 });
+
+    carts.push({
+      userId,
+      productId,
+      quantity,
+    });
+  }
+
+  await Cart.insertMany(carts);
+  for (let i = 0; i < 7; i++) {
+    const numOrderItems = faker.number.int({ min: 1, max: 5 });
+    const orderItems = Array.from({ length: numOrderItems }, () => ({
+      productId: faker.helpers.arrayElement(productIds),
+      quantity: faker.number.int({ min: 1, max: 10 }),
+    }));
+    const deliveryAddress = `${faker.location.streetAddress()}, ${faker.location.city()}`;
+    const contactNumber = faker.phone.number();
+
+    orders.push({
+      userId,
+      orderItems,
+      deliveryAddress,
+      contactNumber,
+    });
+  }
+  await Order.insertMany(orders);
+  return carts;
 };

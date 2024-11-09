@@ -11,7 +11,7 @@ import attributeRoutes from "./modules/attributes/attributes.routes.js";
 import productRoutes from "./modules/products/products.routes.js";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import orderRoutes from "./modules/orders/orders.routes.js";
-import seedRoutes from "./modules/seed/routes.js";
+import { seedCartsAndOrder } from "./modules/seed/scripts.js";
 
 const app = express();
 
@@ -47,16 +47,15 @@ app.use("/api/attributes", attributeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/seed", seedRoutes);
+app.get("/api/seed", async (req: Request, res: Response) => {
+  try {
+    await seedCartsAndOrder();
+    res.status(200).json({ message: "seed success" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-// app.use(
-//   "/uploads/products",
-//   express.static(path.join(getRootDir(), "/dist/uploads/products"))
-// );
-// app.use(
-//   "/uploads/users",
-//   express.static(path.join(getRootDir(), "/uploads/users"))
-// );
 app.use(express.static("uploads/products"));
 app.use(errorHandler);
 

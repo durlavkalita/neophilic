@@ -8,7 +8,7 @@ export interface IProduct extends Document {
   sku: string;
   stock: number;
   images: string[] | null;
-  category: Types.ObjectId;
+  categoryId: Types.ObjectId;
   attributes: {};
   status: "ENABLED" | "DISABLED";
   rating: number;
@@ -25,7 +25,7 @@ const ProductSchema = new Schema<IProduct>(
     sku: { type: String, required: true, unique: true },
     stock: { type: Number, default: 0 },
     images: [{ type: String }],
-    category: { type: Schema.Types.ObjectId, ref: "Category", index: true },
+    categoryId: { type: Schema.Types.ObjectId, ref: "Category", index: true },
     attributes: {
       type: Map,
       of: String,

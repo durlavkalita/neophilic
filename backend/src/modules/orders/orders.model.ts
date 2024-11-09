@@ -1,7 +1,7 @@
 import { Schema, Document, Types, model } from "mongoose";
 
 export interface IOrder extends Document {
-  user: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
   totalAmount: number;
   items: any[];
   paymentStatus: "PENDING" | "PAID" | "FAILED";
@@ -15,7 +15,7 @@ export interface IOrder extends Document {
 
 const OrderSchema = new Schema<IOrder>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     totalAmount: { type: Number, default: 0 },
     items: [
       {
