@@ -206,13 +206,13 @@ export const seedCartsAndOrder = async () => {
       quantity: faker.number.int({ min: 1, max: 10 }),
     }));
     const deliveryAddress = `${faker.location.streetAddress()}, ${faker.location.city()}`;
-    const contactNumber = faker.phone.number();
+    const phoneNumber = faker.phone.number();
 
     orders.push({
       userId,
       orderItems,
       deliveryAddress,
-      contactNumber,
+      phoneNumber,
     });
   }
   await Order.deleteMany({});

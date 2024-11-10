@@ -1,7 +1,15 @@
 "use client";
 
 import React from "react";
-// import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import {
   FiShoppingBag,
   FiUsers,
@@ -131,12 +139,17 @@ const Charts: React.FC = () => {
           <h2 className="text-lg font-medium text-gray-900">
             Revenue Over Time
           </h2>
-          {/* <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={revenueData}>
-              <Area type="monotone" dataKey="revenue" stroke="#8884d8" fill="#8884d8" />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#8884d8"
+                fill="#8884d8"
+              />
               <Tooltip />
             </AreaChart>
-          </ResponsiveContainer> */}
+          </ResponsiveContainer>
         </div>
       </div>
       <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -144,7 +157,7 @@ const Charts: React.FC = () => {
           <h2 className="text-lg font-medium text-gray-900">
             Product Sales Distribution
           </h2>
-          {/* <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={productData}
@@ -156,12 +169,15 @@ const Charts: React.FC = () => {
                 label
               >
                 {productData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />
             </PieChart>
-          </ResponsiveContainer> */}
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
