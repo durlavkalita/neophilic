@@ -20,10 +20,6 @@ const navigationItems = [
     name: "categories",
   },
   {
-    link: "/dashboard/collections",
-    name: "collections",
-  },
-  {
     link: "/dashboard/attributes",
     name: "attributes",
   },

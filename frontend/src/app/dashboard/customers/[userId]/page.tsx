@@ -1,6 +1,7 @@
 "use client";
 import { humanReadableDate } from "@/lib/utils";
 import { getUserById } from "@/services/authServices";
+import { getOrdersByUser } from "@/services/orderServices";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -9,6 +10,7 @@ export default function Page() {
   const userId = String(params.userId);
 
   const [user, setUser] = useState<User | null>();
+  const [orders, setOrders] = useState<Order[]>();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -16,13 +18,21 @@ export default function Page() {
     const fetchUserById = async () => {
       try {
         const data = await getUserById(userId!);
-        console.log(data);
         setUser(data.data);
       } catch (error) {
         console.log(error);
       }
     };
+    const fetchUserOrders = async () => {
+      try {
+        const data = await getOrdersByUser(userId!);
+        setOrders(data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchUserById();
+    fetchUserOrders();
     return function () {
       controller.abort();
     };
@@ -36,6 +46,29 @@ export default function Page() {
         <div className="lg:w-2/3 space-y-6">
           <div className="border-2 rounded-lg p-4 space-y-4">
             <h2 className="text-lg font-semibold mb-4">Order History</h2>
+            <div>
+              {orders?.map((order) => (
+                <div key={order._id}>
+                  <div className="flex justify-between items-center space-y-2">
+                    <span className="text-blue-500 text-md cursor-pointer">
+                      #{order._id}
+                    </span>
+                    <span className="text-gray-700 text-md">
+                      {humanReadableDate(order.createdAt)}
+                    </span>
+                    <span className="text-gray-700 text-md capitalize">
+                      {order.paymentStatus.toLocaleLowerCase()}
+                    </span>
+                    <span className="text-gray-700 text-md capitalize">
+                      {order.currentStatus.toLocaleLowerCase()}
+                    </span>
+                    <span className="text-gray-700 text-md">
+                      ₹{order.totalAmount}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

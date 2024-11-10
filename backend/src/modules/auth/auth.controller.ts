@@ -34,17 +34,7 @@ export const getUserById = async (req: Request, res: Response) => {
       res.status(404).json({ message: "User not found." });
       return;
     }
-    const userDetails = {
-      _id: user._id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      image: user.image,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      role: user.role,
-    };
-    res.status(200).json({ message: "Successful", data: userDetails });
+    res.status(200).json({ message: "Successful", data: user });
     return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });

@@ -11,7 +11,7 @@ import attributeRoutes from "./modules/attributes/attributes.routes.js";
 import productRoutes from "./modules/products/products.routes.js";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import orderRoutes from "./modules/orders/orders.routes.js";
-import { seedCartsAndOrder } from "./modules/seed/scripts.js";
+import { seedCartsAndOrder } from "./utils/seedScripts.js";
 
 const app = express();
 

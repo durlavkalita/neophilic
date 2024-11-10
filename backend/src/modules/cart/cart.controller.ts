@@ -4,7 +4,7 @@ import { Cart } from "./cart.model.js";
 export const getCart = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   try {
-    const cart = await Cart.find({ user: userId });
+    const cart = await Cart.find({ userId: userId });
     if (!cart) {
       res.status(404).json({ message: "Cart not found" });
       return;
@@ -23,14 +23,14 @@ export const addToCart = async (req: Request, res: Response) => {
 
   try {
     let cart = await Cart.findOne({
-      user: userId,
-      product: productId,
+      userId: userId,
+      productId: productId,
     });
 
     if (!cart) {
       const newCart = new Cart({
-        user: userId,
-        product: productId,
+        userId,
+        productId,
         quantity,
       });
 

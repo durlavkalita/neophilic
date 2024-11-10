@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
-import { User } from "../auth/auth.model.js";
-import { Product } from "../products/products.model.js";
-import { Category } from "../categories/categories.model.js";
-import { Attribute } from "../attributes/attributes.model.js";
-import { Cart } from "../cart/cart.model.js";
-import { Order } from "../orders/orders.model.js";
+import { User } from "../modules/auth/auth.model.js";
+import { Product } from "../modules/products/products.model.js";
+import { Category } from "../modules/categories/categories.model.js";
+import { Attribute } from "../modules/attributes/attributes.model.js";
+import { Cart } from "../modules/cart/cart.model.js";
+import { Order } from "../modules/orders/orders.model.js";
 
 export const seedUsers = async () => {
   // Clear existing users
@@ -114,9 +114,17 @@ export const seedAttributes = async () => {
 };
 
 export const seedProducts = async () => {
+  try {
+    await seedUsers();
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    await seedAttributes();
+  } catch (error) {
+    console.log(error);
+  }
   const categories = await seedCategories();
-  const attributes = await seedAttributes();
-
   await Product.deleteMany({});
 
   const products = [];
@@ -170,7 +178,6 @@ export const seedCollections = async (
 export const seedCartsAndOrder = async () => {
   const products = await seedProducts();
   const productIds = products.map((item) => item._id);
-  console.log(productIds);
 
   const carts = [];
   const orders = [];
@@ -188,8 +195,10 @@ export const seedCartsAndOrder = async () => {
       quantity,
     });
   }
-
+  await Cart.deleteMany({});
   await Cart.insertMany(carts);
+  console.log("Cart data seeded");
+
   for (let i = 0; i < 7; i++) {
     const numOrderItems = faker.number.int({ min: 1, max: 5 });
     const orderItems = Array.from({ length: numOrderItems }, () => ({
@@ -206,6 +215,9 @@ export const seedCartsAndOrder = async () => {
       contactNumber,
     });
   }
+  await Order.deleteMany({});
   await Order.insertMany(orders);
-  return carts;
+  console.log("Order data seeded");
+
+  return;
 };

@@ -8,7 +8,10 @@ export const getAllOrders = async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string);
   if (!page && !limit) {
     try {
-      const orders = await Order.find();
+      const orders = await Order.find().populate({
+        path: "userId",
+        select: "-password",
+      });
       res.status(200).json({ message: "Successful", data: orders });
       return;
     } catch (error: any) {
@@ -19,6 +22,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
     try {
       const skip = (page - 1) * limit;
       const orders = await Order.find()
+        .populate({ path: "userId", select: "-password" })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -44,7 +48,7 @@ export const createOrder = async (req: Request, res: Response) => {
   const {
     orderItems,
     deliveryAddress,
-    contactNumber,
+    phoneNumber,
     paymentStatus,
     paymentMethod,
     currentStatus,
@@ -54,8 +58,9 @@ export const createOrder = async (req: Request, res: Response) => {
     // Calculate total price from order items
     let totalAmount = 0;
     // Process each item to check stock and calculate total amount
+    let orderItemsMod = [];
     for (const item of orderItems) {
-      const { productId, quantity, priceAtTime } = item;
+      const { productId, quantity } = item;
       const product = await Product.findById(productId);
 
       if (!product) {
@@ -74,8 +79,6 @@ export const createOrder = async (req: Request, res: Response) => {
 
       // Update product stock
       product.stock -= quantity;
-      console.log(product);
-
       await product.save();
 
       // Add inventory history entry for sale
@@ -88,7 +91,12 @@ export const createOrder = async (req: Request, res: Response) => {
           notes: "Product Sale",
         },
       ]);
-
+      const itemsDict = {
+        productId: productId,
+        quantity: quantity,
+        priceAtTime: product.currentPrice,
+      };
+      orderItemsMod.push(itemsDict);
       // Calculate total price
       totalAmount += quantity * Number(product.currentPrice);
     }
@@ -96,11 +104,11 @@ export const createOrder = async (req: Request, res: Response) => {
     // Create the order
     const order = await Order.create([
       {
-        user: userId,
-        items: orderItems,
+        userId: userId,
+        orderItems: orderItemsMod,
         totalAmount,
         deliveryAddress,
-        contactNumber,
+        phoneNumber,
         paymentStatus: paymentStatus || "PENDING",
         paymentMethod: paymentMethod || "COD",
         currentStatus: currentStatus || "PENDING",
@@ -118,7 +126,14 @@ export const createOrder = async (req: Request, res: Response) => {
 export const getOrderById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const order = await Order.findById(id);
+    const order = await Order.findById(id)
+      .populate({
+        path: "userId",
+        select: "-password",
+      })
+      .populate({
+        path: "orderItems.productId",
+      });
     if (!order) {
       res.status(404).json({ message: "Order not found" });
       return;
@@ -131,11 +146,11 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
-export const getOrderByUserId = async (req: Request, res: Response) => {
+export const getOrdersByUserId = async (req: Request, res: Response) => {
   const { userId } = req.params;
 
   try {
-    const orders = await Order.find({ user: userId });
+    const orders = await Order.find({ userId: userId });
     if (!orders.length) {
       res.status(404).json({ message: "No orders found for this user" });
       return;
@@ -163,11 +178,11 @@ export const getOrderInvoice = async (req: Request, res: Response) => {
     // Generate a simple invoice as a response (for demonstration)
     const invoice = {
       orderId: order._id,
-      userId: order.user,
+      userId: order.userId,
       totalAmount: order.totalAmount,
-      items: order.items,
+      orderItems: order.orderItems,
       deliveryAddress: order.deliveryAddress,
-      contactNumber: order.contactNumber,
+      phoneNumber: order.phoneNumber,
       createdAt: order.createdAt,
     };
 
@@ -196,7 +211,7 @@ export const cancelOrder = async (req: Request, res: Response) => {
 
     order.currentStatus = "CANCELED";
 
-    const inventoryUpdates = order.items.map(async (item) => {
+    const inventoryUpdates = order.orderItems.map(async (item) => {
       const { productId, quantity } = item;
 
       // Update product's current stock
@@ -223,6 +238,33 @@ export const cancelOrder = async (req: Request, res: Response) => {
 
     await order.save();
     res.json({ message: "Order has been cancelled", order });
+    return;
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+};
+
+export const orderStatusChange = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+  const newStatus = req.body.status;
+
+  try {
+    const order = await Order.findById(id);
+    if (!order) {
+      res.status(404).json({ message: "Order not found" });
+      return;
+    }
+    if (order.currentStatus === "CANCELED") {
+      res.status(400).json({ message: "Order is already canceled" });
+      return;
+    }
+
+    order.currentStatus = newStatus;
+
+    await order.save();
+    res.json({ message: "Order status has changes", order });
     return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });

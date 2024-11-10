@@ -3,12 +3,12 @@ import { Schema, Document, Types, model } from "mongoose";
 export interface IOrder extends Document {
   userId: Schema.Types.ObjectId;
   totalAmount: number;
-  items: any[];
+  orderItems: any[];
   paymentStatus: "PENDING" | "PAID" | "FAILED";
   paymentMethod: "CREDIT_CARD" | "UPI" | "COD";
   currentStatus: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELED";
   deliveryAddress: string;
-  contactNumber: string;
+  phoneNumber: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,10 +17,11 @@ const OrderSchema = new Schema<IOrder>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     totalAmount: { type: Number, default: 0 },
-    items: [
+    orderItems: [
       {
         productId: { type: Schema.Types.ObjectId, ref: "Product" },
         quantity: { type: Number },
+        priceAtTime: { type: Number },
         _id: false,
       },
     ],
@@ -40,7 +41,7 @@ const OrderSchema = new Schema<IOrder>(
       default: "PENDING",
     },
     deliveryAddress: { type: String, required: true },
-    contactNumber: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
   },
   { timestamps: true }
 );

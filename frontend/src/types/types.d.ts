@@ -48,3 +48,39 @@ declare interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+declare interface Order {
+  _id: string;
+  userId: User;
+  totalAmount: number;
+  orderItems: {
+    productId: string;
+    quantity: number;
+    priceAtTime: number;
+  }[];
+  paymentStatus: "PENDING" | "PAID" | "FAILED";
+  paymentMethod: "CREDIT_CARD" | "UPI" | "COD";
+  currentStatus: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELED";
+  deliveryAddress: string;
+  contactNumber: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+declare interface OrderWithProduct {
+  _id: string;
+  userId: User;
+  totalAmount: number;
+  orderItems: {
+    productId: Product;
+    quantity: number;
+    priceAtTime: number;
+  }[];
+  paymentStatus: "PENDING" | "PAID" | "FAILED";
+  paymentMethod: "CREDIT_CARD" | "UPI" | "COD";
+  currentStatus: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELED";
+  deliveryAddress: string;
+  contactNumber: string;
+  createdAt: string;
+  updatedAt: string;
+}

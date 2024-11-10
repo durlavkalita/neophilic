@@ -10,7 +10,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const basePrice = req.body.basePrice;
     const currentPrice = req.body.currentPrice;
     const sku = req.body.sku;
-    const category = req.body.category;
+    const categoryId = req.body.category;
     const stock = Number(req.body.stock);
     const attributes = req.body.attributes;
 
@@ -28,7 +28,7 @@ export const createProduct = async (req: Request, res: Response) => {
       sku,
       stock,
       attributes: parsedAttributes,
-      category,
+      categoryId,
       images,
     });
 
@@ -59,7 +59,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const skip = (page - 1) * limit;
     const products = await Product.find()
-      .populate("category")
+      .populate("categoryId")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -82,7 +82,7 @@ export const getProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const product = await Product.findById(id).populate("category");
+    const product = await Product.findById(id).populate("categoryId");
     if (!product) {
       res.status(404).json({ message: "Product not found" });
       return;
@@ -146,9 +146,9 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
   const { categoryId } = req.params;
 
   try {
-    const products = await Product.find({ category: categoryId })
-      .populate("category")
-      .populate("attributes");
+    const products = await Product.find({ categoryId: categoryId }).populate(
+      "categoryId"
+    );
     if (!products.length) {
       res.status(404).json({ message: "No products found for this category" });
       return;
@@ -228,7 +228,7 @@ export const searchProducts = async (req: Request, res: Response) => {
     const products = await Product.find({
       name: { $regex: keyword as string, $options: "i" },
     })
-      .populate("category")
+      .populate("categoryId")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
