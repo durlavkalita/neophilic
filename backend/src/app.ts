@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import "dotenv/config";
-import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { connectToMongoDB } from "./config/db.config.js";
 import authRoutes from "./modules/auth/auth.routes.js";
@@ -32,7 +31,6 @@ app.use(cors());
 //   next();
 // });
 app.use(express.json());
-app.use(cookieParser());
 
 connectToMongoDB();
 

@@ -204,6 +204,7 @@ export const seedCartsAndOrder = async () => {
     const orderItems = Array.from({ length: numOrderItems }, () => ({
       productId: faker.helpers.arrayElement(productIds),
       quantity: faker.number.int({ min: 1, max: 10 }),
+      priceAtTime: faker.number.int({ min: 100, max: 500 }),
     }));
     const deliveryAddress = `${faker.location.streetAddress()}, ${faker.location.city()}`;
     const phoneNumber = faker.phone.number();

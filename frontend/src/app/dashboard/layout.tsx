@@ -2,8 +2,26 @@
 
 import Sidebar from "@/components/side-bar";
 import TopBar from "@/components/tob-bar";
+import { useAuth } from "@/providers/auth-provider";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+  const router = useRouter();
+  useEffect(() => {
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.push("/login");
+      }
+    }
+  }, [isAuthenticated, loading, router]);
+  if (loading)
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        Loading...
+      </div>
+    );
   return (
     <div className="min-h-screen flex flex-col">
       <TopBar />

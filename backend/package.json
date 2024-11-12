@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "build": "rimraf dist && npx tsc",
+    "build": "npx rimraf dist && npx tsc",
     "postbuild": "npx mkdirp dist/uploads/users dist/uploads/products",
     "prestart": "npm run build",
     "start": "node dist/index.js",
@@ -18,7 +18,6 @@
   "dependencies": {
     "@faker-js/faker": "^9.1.0",
     "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
@@ -29,13 +28,11 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.7.5",
-    "@types/pg": "^8.11.10",
     "concurrently": "^9.0.1",
     "nodemon": "^3.1.7",
     "rimraf": "^6.0.1",

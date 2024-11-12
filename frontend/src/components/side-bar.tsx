@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MdPeopleAlt } from "react-icons/md";
-import { FaBox, FaHashtag, FaHome, FaLink, FaTag } from "react-icons/fa";
-import { FaBoxArchive } from "react-icons/fa6";
+import {} from "react-icons/md";
+import { FaHashtag, FaHome, FaLink, FaTag } from "react-icons/fa";
+import { FiPackage, FiShoppingBag, FiUsers } from "react-icons/fi";
 
 const navigationItems = [
-  {
-    link: "/dashboard/overview",
-    name: "dashboard",
-  },
   {
     link: "/dashboard/products",
     name: "products",
@@ -44,7 +40,7 @@ const ReturnIcon = ({
     case "dashboard":
       return <FaHome className={className} />;
     case "products":
-      return <FaBoxArchive className={className} />;
+      return <FiPackage className={className} />;
     case "attributes":
       return <FaHashtag className={className} />;
     case "collections":
@@ -52,9 +48,9 @@ const ReturnIcon = ({
     case "categories":
       return <FaLink className={className} />;
     case "orders":
-      return <FaBox className={className} />;
+      return <FiShoppingBag className={className} />;
     case "customers":
-      return <MdPeopleAlt className={className} />;
+      return <FiUsers className={className} />;
   }
 };
 
@@ -64,37 +60,77 @@ export default function Sidebar() {
   return (
     <nav className="bg-gray-100 h-full border-r-2">
       <div className="py-6">
-        <div className="space-y-2">
-          {navigationItems.map((item, index) => (
-            <div key={index}>
-              <Link
-                href={item.link}
-                className={`flex items-center py-2 border-l-4 pl-8 text-gray-700 hover:bg-gray-200 rounded ${
-                  pathname.includes(item.link)
-                    ? " border-blue-500 bg-gray-100"
-                    : "border-white"
+        <div className="">
+          <div>
+            <div className="text-xs font-medium text-gray-700 ml-8 mb-4 uppercase">
+              Quick links
+            </div>
+            <Link
+              href={"/dashboard/overview"}
+              className={`flex items-center py-2 border-l-4 pl-8 text-gray-700 hover:bg-gray-200 rounded ${
+                pathname.includes("/dashboard/overview")
+                  ? " border-blue-500 bg-gray-100 "
+                  : "border-white "
+              }`}
+            >
+              <FaHome
+                className={`${
+                  pathname.includes("/dashboard/overview")
+                    ? "text-blue-500"
+                    : ""
+                }`}
+              />
+              <span
+                className={`ml-2 font-medium capitalize text-sm ${
+                  pathname.includes("/dashboard/overview")
+                    ? "text-blue-500"
+                    : ""
                 }`}
               >
-                <ReturnIcon
-                  icon={item.name}
-                  className={`${
+                Dashboard
+              </span>
+            </Link>
+            <Link
+              href={"/dashboard/products/new"}
+              className={`flex items-center py-2 border-l-4 pl-8 text-gray-700 hover:bg-gray-200 rounded `}
+            >
+              <FiPackage className={``} />
+              <span className={`ml-2 font-medium capitalize text-sm `}>
+                New Product
+              </span>
+            </Link>
+          </div>
+          <div className="mt-8">
+            <div className="text-xs font-medium text-gray-700 ml-8 mb-4 uppercase">
+              Catalog
+            </div>
+            {navigationItems.map((item, index) => (
+              <div key={index}>
+                <Link
+                  href={item.link}
+                  className={`flex items-center py-2 border-l-4 pl-8 text-gray-700 hover:bg-gray-200 rounded ${
                     pathname.includes(item.link)
-                      ? "text-blue-500"
-                      : "text-black"
-                  }`}
-                />
-                <span
-                  className={`ml-2 font-medium capitalize text-md ${
-                    pathname.includes(item.link)
-                      ? "text-blue-500"
-                      : "text-black"
+                      ? " border-blue-500 bg-gray-100"
+                      : "border-white"
                   }`}
                 >
-                  {item.name}
-                </span>
-              </Link>
-            </div>
-          ))}
+                  <ReturnIcon
+                    icon={item.name}
+                    className={`${
+                      pathname.includes(item.link) ? "text-blue-500" : ""
+                    }`}
+                  />
+                  <span
+                    className={`ml-2 font-medium capitalize text-sm ${
+                      pathname.includes(item.link) ? "text-blue-500" : ""
+                    }`}
+                  >
+                    {item.name}
+                  </span>
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </nav>

@@ -1,45 +1,48 @@
 "use client";
+import { NotificationModal } from "@/components/notification-modal";
 import { getOrderById, orderStatusChange } from "@/services/orderServices";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaArrowRight } from "react-icons/fa";
 
 export default function Page() {
   const params = useParams();
   const orderId = String(params.orderId);
 
-  const [order, setOrder] = useState<OrderWithProduct>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [order, setOrder] = useState<OrderWithProduct | null>();
 
   const orderStatusNextStep = () => {
     if (order?.currentStatus == "PENDING") {
-      return "SHIPPED";
+      return "Change to Shipped";
     } else if (order?.currentStatus == "SHIPPED") {
-      return "DELIVERED";
+      return "Change to Delivered";
     } else {
-      return "";
+      return order?.currentStatus.toLowerCase();
     }
   };
+  const fetchUserOrder = async (orderId: string) => {
+    try {
+      const data = await getOrderById(orderId);
+      console.log(data);
 
+      setOrder(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     const controller = new AbortController();
 
-    const fetchUserOrder = async () => {
-      try {
-        const data = await getOrderById(orderId!);
-        console.log(data);
-
-        setOrder(data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUserOrder();
+    fetchUserOrder(orderId);
     return function () {
       controller.abort();
     };
   }, [orderId]);
 
   const handleOrderStatusChange = async () => {
-    let newStatus: "SHIPPED" | "DELIVERED";
+    let newStatus: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELED";
     if (order?.currentStatus == "PENDING") {
       newStatus = "SHIPPED";
     } else if (order?.currentStatus == "SHIPPED") {
@@ -50,8 +53,13 @@ export default function Page() {
     try {
       const data = await orderStatusChange(orderId, { status: newStatus });
       console.log(data);
+      setOrder((prevOrder) => ({ ...prevOrder!, currentStatus: newStatus }));
+      setModalMessage(`Order status updated to ${newStatus}`);
+      setIsModalVisible(true);
     } catch (error) {
       console.log(error);
+      setModalMessage("Failed to update order status. Please try again.");
+      setIsModalVisible(true);
     }
   };
 
@@ -66,8 +74,8 @@ export default function Page() {
             <div className="pt-4">
               {order?.orderItems.map((item, index) => (
                 <div key={index}>
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-col">
+                  <div className="grid grid-cols-6 gap-x-2 justify-between items-center py-4">
+                    <div className="col-span-4 flex flex-col">
                       <span className="text-sm font-medium">
                         {item.productId.name}
                       </span>
@@ -83,24 +91,56 @@ export default function Page() {
                       ₹{Number(item.priceAtTime) * Number(item.quantity)}
                     </span>
                   </div>
-                  <div className="mt-8 border-t-2 py-4">
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-700">
-                        <span className="font-medium">Status:</span>
-                        <span className="ml-1 capitalize">
-                          {order.currentStatus.toLowerCase()}
-                        </span>
-                      </div>
-                      <button
-                        className="bg-indigo-600 text-white px-4 py-1 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 capitalize"
-                        onClick={handleOrderStatusChange}
-                      >
-                        Change to {orderStatusNextStep().toLowerCase()}
-                      </button>
-                    </div>
-                  </div>
                 </div>
               ))}
+              <div className="mt-8 border-t-2 py-6 border-gray-500">
+                <div className="flex justify-between items-center">
+                  <div className="flex text-sm text-gray-700 items-center">
+                    <span className="font-medium mr-2">Status:</span>
+                    <span
+                      className={`border-2 px-1 rounded-md ${
+                        order?.currentStatus == "PENDING"
+                          ? "bg-green-300 border-green-500"
+                          : "bg-gray-200 border-gray-300"
+                      }`}
+                    >
+                      Pending
+                    </span>
+                    <FaArrowRight size={12} className="mx-1" />
+
+                    <span
+                      className={`border-2 px-1 rounded-md ${
+                        order?.currentStatus == "SHIPPED"
+                          ? "bg-green-300 border-green-500"
+                          : "bg-gray-200 border-gray-300"
+                      }`}
+                    >
+                      Shipped
+                    </span>
+                    <FaArrowRight size={12} className="mx-1" />
+                    <span
+                      className={`border-2 px-1 rounded-md ${
+                        order?.currentStatus == "DELIVERED"
+                          ? "bg-green-300 border-green-500"
+                          : "bg-gray-200 border-gray-300"
+                      }`}
+                    >
+                      Delivered
+                    </span>
+                  </div>
+                  <button
+                    className="bg-indigo-600 text-white px-4 py-1 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 capitalize"
+                    onClick={handleOrderStatusChange}
+                  >
+                    {orderStatusNextStep()}
+                  </button>
+                  <NotificationModal
+                    message={modalMessage}
+                    isVisible={isModalVisible}
+                    onClose={() => setIsModalVisible(false)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
