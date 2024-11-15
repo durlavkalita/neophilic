@@ -1,8 +1,10 @@
 "use client";
 
+import TitleWithBackButton from "@/components/title-with-back-button";
 import { getAllAttributes } from "@/services/attributeServices";
 import { getAllCategories } from "@/services/categoryServices";
 import { createProduct, getProductById } from "@/services/productServices";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   AwaitedReactNode,
@@ -120,7 +122,18 @@ export default function Page() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-semibold mb-6">Create New Product</h1>
+      <div className="flex items-center justify-between mb-6">
+        <TitleWithBackButton
+          title={productId == "new" ? "Create New Product" : "Update Product"}
+          url={"/dashboard/products"}
+        />
+        <Link
+          href={`/dashboard/products/${productId}/inventory`}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Inventory History
+        </Link>
+      </div>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main content - 2/3 width on larger screens */}
         <div className="lg:w-2/3 space-y-6">

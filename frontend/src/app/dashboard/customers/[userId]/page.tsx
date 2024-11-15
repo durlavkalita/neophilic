@@ -1,4 +1,5 @@
 "use client";
+import TitleWithBackButton from "@/components/title-with-back-button";
 import { humanReadableDate } from "@/lib/utils";
 import { getUserById } from "@/services/authServices";
 import { getOrdersByUser } from "@/services/orderServices";
@@ -40,7 +41,12 @@ export default function Page() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-semibold mb-6">Customer Details</h1>
+      <div className="mb-6">
+        <TitleWithBackButton
+          title={"Customer Details"}
+          url={"/dashboard/customers"}
+        />
+      </div>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main content - 2/3 width on larger screens */}
         <div className="lg:w-2/3 space-y-6">

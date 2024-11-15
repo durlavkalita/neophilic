@@ -1,5 +1,6 @@
 "use client";
 
+import TitleWithBackButton from "@/components/title-with-back-button";
 import {
   createCategory,
   getCategoryById,
@@ -57,7 +58,14 @@ export default function Page() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-2xl font-semibold mb-6">Create New Category</h1>
+      <div className="mb-6">
+        <TitleWithBackButton
+          title={
+            categoryId == "new" ? "Create New Category" : "Update Category"
+          }
+          url={"/dashboard/categories"}
+        />
+      </div>
       <div className="flex">
         {/* Main content - 2/3 width on larger screens */}
         <div className="w-full space-y-6">

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Attribute } from "./attributes.model.js";
+import logger from "../../config/logger.config.js";
 
 // Get all attributes
 export const getAllAttributes = async (req: Request, res: Response) => {
@@ -11,7 +12,8 @@ export const getAllAttributes = async (req: Request, res: Response) => {
       res.status(200).json({ message: "Successful", data: attributes });
       return;
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      logger.error(error);
+      res.status(500).json({ message: "Unsuccessful", error: error.message });
       return;
     }
   } else {
@@ -31,7 +33,8 @@ export const getAllAttributes = async (req: Request, res: Response) => {
       });
       return;
     } catch (error: any) {
-      res.status(500).json({ message: "Error fetching attributes", error });
+      logger.error(error);
+      res.status(500).json({ message: "Unsuccessful", error: error.message });
       return;
     }
   }
@@ -42,13 +45,16 @@ export const getAttributeById = async (req: Request, res: Response) => {
   try {
     const attribute = await Attribute.findById(req.params.id);
     if (!attribute) {
-      res.status(404).json({ error: "Collection not found" });
+      res
+        .status(404)
+        .json({ message: "Attribute not found", error: "Attribute not found" });
       return;
     }
     res.status(200).json({ message: "Successful", data: attribute });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -62,7 +68,8 @@ export const createAttribute = async (req: Request, res: Response) => {
     res.status(201).json({ message: "Successful", data: attribute });
     return;
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -76,13 +83,16 @@ export const updateAttributeById = async (req: Request, res: Response) => {
       { new: true }
     );
     if (!attribute) {
-      res.status(404).json({ error: "Attribute not found" });
+      res
+        .status(404)
+        .json({ message: "Attribute not found", error: "Attribute not found" });
       return;
     }
     res.status(200).json({ message: "Successful", data: attribute });
     return;
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -92,12 +102,15 @@ export const deleteAttributeById = async (req: Request, res: Response) => {
   try {
     const attribute = await Attribute.findByIdAndDelete(req.params.id);
     if (!attribute) {
-      res.status(404).json({ error: "Attribute not found" });
+      res
+        .status(404)
+        .json({ message: "Attribute not found", error: "Attribute not found" });
       return;
     }
     res.status(204).json({ message: "Successful" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };

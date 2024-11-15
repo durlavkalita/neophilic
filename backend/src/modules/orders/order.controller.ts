@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Order } from "./orders.model.js";
 import { InventoryHistory } from "../inventory/inventory.model.js";
 import { Product } from "../products/products.model.js";
+import logger from "../../config/logger.config.js";
 
 export const getAllOrders = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string);
@@ -15,7 +16,8 @@ export const getAllOrders = async (req: Request, res: Response) => {
       res.status(200).json({ message: "Successful", data: orders });
       return;
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      logger.error(error);
+      res.status(500).json({ message: "Unsuccessful", error: error.message });
       return;
     }
   } else {
@@ -36,7 +38,8 @@ export const getAllOrders = async (req: Request, res: Response) => {
       });
       return;
     } catch (error: any) {
-      res.status(500).json({ message: "Error fetching orders", error });
+      logger.error(error);
+      res.status(500).json({ message: "Unsuccessful", error: error.message });
       return;
     }
   }
@@ -64,16 +67,18 @@ export const createOrder = async (req: Request, res: Response) => {
       const product = await Product.findById(productId);
 
       if (!product) {
-        res
-          .status(404)
-          .json({ error: `Product with ID ${productId} not found.` });
+        res.status(404).json({
+          message: "Unsuccessful",
+          error: `Product with ID ${productId} not found.`,
+        });
         return;
       }
 
       if (product.stock < quantity) {
-        res
-          .status(400)
-          .json({ error: `Insufficient stock for product ID ${productId}.` });
+        res.status(400).json({
+          message: "Unsuccessful",
+          error: `Insufficient stock for product ID ${productId}.`,
+        });
         return;
       }
 
@@ -118,7 +123,8 @@ export const createOrder = async (req: Request, res: Response) => {
     res.status(201).json({ message: "Successful", data: order });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -135,13 +141,16 @@ export const getOrderById = async (req: Request, res: Response) => {
         path: "orderItems.productId",
       });
     if (!order) {
-      res.status(404).json({ message: "Order not found" });
+      res
+        .status(404)
+        .json({ message: "Order not found", error: "Order not found" });
       return;
     }
     res.status(200).json({ message: "Successful", data: order });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -152,14 +161,18 @@ export const getOrdersByUserId = async (req: Request, res: Response) => {
   try {
     const orders = await Order.find({ userId: userId });
     if (!orders.length) {
-      res.status(404).json({ message: "No orders found for this user" });
+      res.status(404).json({
+        message: "Unsuccessful",
+        error: "No orders found for this user",
+      });
       return;
     }
 
     res.status(200).json({ message: "Successful", data: orders });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -171,11 +184,12 @@ export const getOrderInvoice = async (req: Request, res: Response) => {
   try {
     const order = await Order.findById(id).populate("orderItems");
     if (!order) {
-      res.status(404).json({ message: "Order not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Order not found" });
       return;
     }
 
-    // Generate a simple invoice as a response (for demonstration)
     const invoice = {
       orderId: order._id,
       userId: order.userId,
@@ -188,7 +202,8 @@ export const getOrderInvoice = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Successful", data: invoice });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -201,11 +216,22 @@ export const cancelOrder = async (req: Request, res: Response) => {
   try {
     const order = await Order.findById(id);
     if (!order) {
-      res.status(404).json({ message: "Order not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Order not found" });
+      return;
+    }
+    if (order.userId.toString() != userId) {
+      res.status(403).json({
+        message: "Unsuccessful",
+        error: "Order owner is not same as authorized user",
+      });
       return;
     }
     if (order.currentStatus === "CANCELED") {
-      res.status(400).json({ message: "Order is already canceled" });
+      res
+        .status(400)
+        .json({ message: "Unsuccessful", error: "Order is already canceled" });
       return;
     }
 
@@ -237,37 +263,41 @@ export const cancelOrder = async (req: Request, res: Response) => {
     await Promise.all(inventoryUpdates);
 
     await order.save();
-    res.json({ message: "Order has been cancelled", order });
+    res.status(200).json({ message: "Order has been cancelled", order });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
 
 export const orderStatusChange = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const userId = req.user?.id;
   const newStatus = req.body.status;
 
   try {
     const order = await Order.findById(id);
     if (!order) {
-      res.status(404).json({ message: "Order not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Order not found" });
       return;
     }
     if (order.currentStatus === "CANCELED") {
-      res.status(400).json({ message: "Order is already canceled" });
+      res
+        .status(400)
+        .json({ message: "Unsuccessful", error: "Order is already canceled" });
       return;
     }
 
     order.currentStatus = newStatus;
 
     await order.save();
-    res.json({ message: "Order status has changes", order });
+    res.status(200).json({ message: "Order status has changes", order });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };

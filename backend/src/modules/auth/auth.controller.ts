@@ -1,15 +1,23 @@
 import { Request, Response } from "express";
 import * as authService from "./auth.services.js";
 import { User } from "./auth.model.js";
+import logger from "../../config/logger.config.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const data = await authService.register(email, password);
-    res.status(201).json({ message: "User registered successfully", data });
+    if ("error" in data) {
+      res.status(400).json({ message: "Unsuccessful", error: data.error });
+      return;
+    }
+    res.status(201).json({ message: "User register successful", data });
     return;
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    logger.error(error);
+    res
+      .status(500)
+      .json({ message: "User register unsuccessful", error: error.message });
     return;
   }
 };
@@ -18,11 +26,17 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const data = await authService.login(email, password);
-
+    if ("error" in data) {
+      res.status(400).json({ message: "Unsuccessful", error: data.error });
+      return;
+    }
     res.status(200).json({ message: "Login Successful", data });
     return;
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    logger.error(error);
+    res
+      .status(500)
+      .json({ message: "Login Unsuccessful", error: error.message });
   }
 };
 
@@ -31,13 +45,16 @@ export const getUserById = async (req: Request, res: Response) => {
     const id = req.params.id;
     const user = await User.findById(id).select("-password");
     if (!user) {
-      res.status(404).json({ message: "User not found." });
+      res
+        .status(404)
+        .json({ message: "User not found", error: "User not found" });
       return;
     }
-    res.status(200).json({ message: "Successful", data: user });
+    res.status(200).json({ message: "User found", data: user });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "User not found", error: error.message });
     return;
   }
 };
@@ -46,10 +63,12 @@ export const updateUserById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     if (id != req.user?.id) {
-      res.status(403).json({ message: "Invalid credentials" });
+      res.status(403).json({
+        message: "Invalid credentials",
+        error: "User id doesn't match authorized id.",
+      });
       return;
     }
-
     const { firstName, lastName, address, phoneNumber } = req.body;
     const image = req.file?.filename;
 
@@ -64,14 +83,17 @@ export const updateUserById = async (req: Request, res: Response) => {
       new: true,
     }).select("-password");
     if (!updatedUser) {
-      res.status(404).json({ message: "User not found" });
+      res
+        .status(404)
+        .json({ message: "User not found", error: "User not found" });
       return;
     }
 
     res.status(200).json({ message: "Successful", data: updatedUser });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -90,13 +112,16 @@ export const updateUserRoleById = async (req: Request, res: Response) => {
       }
     ).select("-password");
     if (!updatedUser) {
-      res.status(404).json({ message: "User not found" });
+      res
+        .status(404)
+        .json({ message: "User not found", error: "User not found" });
       return;
     }
     res.status(200).json({ message: "Successful" });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -106,13 +131,16 @@ export const verifyToken = async (req: Request, res: Response) => {
     const id = req.user?.id;
     const user = await User.findById(id).select("-password");
     if (!user) {
-      res.status(404).json({ message: "User not found." });
+      res
+        .status(404)
+        .json({ message: "User not found.", error: "User not found" });
       return;
     }
     res.status(200).json({ message: "Successful", data: user });
     return;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -137,7 +165,10 @@ export const getAllUsers = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    res.status(500).json({ message: "Error fetching products", error });
+    logger.error(error);
+    res
+      .status(500)
+      .json({ message: "Error fetching users", error: error.message });
     return;
   }
 };

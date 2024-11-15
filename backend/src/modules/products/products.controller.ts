@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Product } from "./products.model.js";
 import { CollectionItem } from "../collections/collections.model.js";
 import { InventoryHistory } from "../inventory/inventory.model.js";
+import logger from "../../config/logger.config.js";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -73,7 +74,8 @@ export const getAllProducts = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    res.status(500).json({ message: "Error fetching products", error });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -84,13 +86,16 @@ export const getProductById = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(id).populate("categoryId");
     if (!product) {
-      res.status(404).json({ message: "Product not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Product not found" });
       return;
     }
     res.status(200).json({ message: "Successful", data: product });
     return;
   } catch (error: any) {
-    res.status(500).json({ message: "Error fetching product", error });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -104,7 +109,9 @@ export const updateProductById = async (req: Request, res: Response) => {
       new: true,
     });
     if (!updatedProduct) {
-      res.status(404).json({ message: "Product not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Product not found" });
       return;
     }
     if ("stock" in updates) {
@@ -120,7 +127,8 @@ export const updateProductById = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Successful", data: updatedProduct });
     return;
   } catch (error: any) {
-    res.status(500).json({ message: "Error updating product", error });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -131,13 +139,16 @@ export const deleteProductById = async (req: Request, res: Response) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(id);
     if (!deletedProduct) {
-      res.status(404).json({ message: "Product not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Product not found" });
       return;
     }
-    res.status(200).json({ message: "Product deleted successfully" });
+    res.status(204).json({ message: "Product deleted successfully" });
     return;
   } catch (error: any) {
-    res.status(500).json({ message: "Error deleting product", error });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -150,15 +161,18 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
       "categoryId"
     );
     if (!products.length) {
-      res.status(404).json({ message: "No products found for this category" });
+      res
+        .status(404)
+        .json({
+          message: "Unsuccessful",
+          error: "No products found for this category",
+        });
       return;
     }
     res.status(200).json({ message: "Successful", data: products });
     return;
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: "Error fetching products by category", error });
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -173,7 +187,10 @@ export const getProductsByCollection = async (req: Request, res: Response) => {
     if (!collectionItem?.products.length) {
       res
         .status(404)
-        .json({ message: "No products found for this collection" });
+        .json({
+          message: "Unsuccessful",
+          error: "No products found for this collection",
+        });
       return;
     }
 
@@ -182,9 +199,7 @@ export const getProductsByCollection = async (req: Request, res: Response) => {
       .json({ message: "Successful", data: collectionItem.products });
     return;
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: "Error fetching products by collection", error });
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -195,7 +210,9 @@ export const updateProductStatus = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(id);
     if (!product) {
-      res.status(404).json({ message: "Product not found" });
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Product not found" });
       return;
     }
 
@@ -208,7 +225,8 @@ export const updateProductStatus = async (req: Request, res: Response) => {
       product,
     });
   } catch (error: any) {
-    res.status(500).json({ message: "Error updating product status", error });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };
@@ -219,7 +237,9 @@ export const searchProducts = async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 10;
 
   if (!keyword) {
-    res.status(400).json({ message: "Search query is required." });
+    res
+      .status(400)
+      .json({ message: "Unsuccessful", error: "Search query is required." });
     return;
   }
 
@@ -245,7 +265,8 @@ export const searchProducts = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    res.status(500).json({ message: "Server error. Please try again later." });
+    logger.error(error);
+    res.status(500).json({ message: "Unsuccessful", error: error.message });
     return;
   }
 };

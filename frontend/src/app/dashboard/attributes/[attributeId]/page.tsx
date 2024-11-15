@@ -1,5 +1,6 @@
 "use client";
 
+import TitleWithBackButton from "@/components/title-with-back-button";
 import {
   createAttribute,
   getAttributeById,
@@ -75,7 +76,14 @@ export default function Page() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-2xl font-semibold mb-6">Create New Attribute</h1>
+      <div className="mb-6">
+        <TitleWithBackButton
+          title={
+            attributeId == "new" ? "Create New Attribute" : "Update Attribute"
+          }
+          url={"/dashboard/attributes"}
+        />
+      </div>
       <div className="flex">
         {/* Main content - 2/3 width on larger screens */}
         <div className="w-full space-y-6">

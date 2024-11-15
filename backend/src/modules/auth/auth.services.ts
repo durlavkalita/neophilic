@@ -2,19 +2,11 @@ import bcrypt from "bcryptjs";
 import { User } from "./auth.model.js";
 import { generateAccessToken, generateRefreshToken } from "./auth.helpers.js";
 
-interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  userDetails: any;
-}
-
-export const register = async (
-  email: string,
-  password: string
-): Promise<AuthResponse> => {
+export const register = async (email: string, password: string) => {
   const existingUser = await User.findOne({ email });
-  if (existingUser) throw new Error("User already exists");
-
+  if (existingUser) {
+    return { error: "User already exists" };
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = new User({ email, password: hashedPassword });
   await user.save();
@@ -34,13 +26,10 @@ export const register = async (
   return { accessToken, refreshToken, userDetails };
 };
 
-export const login = async (
-  email: string,
-  password: string
-): Promise<AuthResponse> => {
+export const login = async (email: string, password: string) => {
   const user = await User.findOne({ email });
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    throw new Error("Invalid credentials");
+    return { error: "Invalid credentials" };
   }
 
   const accessToken = generateAccessToken(user);

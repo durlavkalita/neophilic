@@ -91,5 +91,5 @@ PATCH /api/support/tickets/{id}
 
 - git clone https://github.com/durlavkalita/neophilic.git
 - cd neophilic
-- docker-compose up -d
+- docker-compose up -d (--build for fresh)
 - docker-compose down (to stop)
