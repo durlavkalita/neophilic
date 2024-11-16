@@ -6,6 +6,7 @@ import { Category } from "../modules/categories/categories.model.js";
 import { Attribute } from "../modules/attributes/attributes.model.js";
 import { Cart } from "../modules/cart/cart.model.js";
 import { Order } from "../modules/orders/orders.model.js";
+import { InventoryHistory } from "../modules/inventory/inventory.model.js";
 
 export const seedUsers = async () => {
   // Clear existing users
@@ -93,20 +94,12 @@ export const seedCategories = async () => {
 export const seedAttributes = async () => {
   await Attribute.deleteMany({});
 
-  const attributes = [];
+  const attributes = [
+    { name: "brand", values: ["bajaj", "havels", "sony"] },
+    { name: "color", values: ["blue", "red", "yellow"] },
+    { name: "size", values: ["xl", "l", "m"] },
+  ];
 
-  for (let i = 0; i < 7; i++) {
-    const attributeName = faker.commerce.productMaterial().toLowerCase();
-    const attributeValues = Array.from(
-      { length: faker.number.int({ min: 2, max: 5 }) },
-      () => faker.color.human().toLowerCase()
-    );
-
-    attributes.push({
-      name: attributeName,
-      values: attributeValues,
-    });
-  }
   const savedAttributes = await Attribute.insertMany(attributes);
   console.log("Attribute data seeded successfully");
 
@@ -128,7 +121,7 @@ export const seedProducts = async () => {
   await Product.deleteMany({});
 
   const products = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 15; i++) {
     const price = faker.commerce.price({ dec: 0 });
     const product = new Product({
       name: faker.commerce.productName(),
@@ -138,6 +131,7 @@ export const seedProducts = async () => {
       sku: faker.vehicle.vin(),
       stock: faker.number.int({ min: 1, max: 100 }),
       categoryId: categories[i % categories.length]._id,
+      attributes: { brand: "bajaj", color: "red", size: "l" },
     });
     products.push(product);
   }
@@ -147,36 +141,29 @@ export const seedProducts = async () => {
   return savedProducts;
 };
 
-export const seedCollections = async (
-  productIds: string[],
-  numCollections = 1
-) => {
-  const collections = [];
-
-  for (let i = 0; i < numCollections; i++) {
-    // Generate a random collection name and description
-    const collectionName = faker.commerce.department().toLowerCase(); // Example: "Winter"
-    const collectionDescription = `${collectionName} collection`;
-
-    // Select a random subset of product IDs for the collection
-    const numProducts = faker.number.int({ min: 1, max: productIds.length });
-    const selectedProducts = faker.helpers.arrayElements(
-      productIds,
-      numProducts
-    );
-
-    collections.push({
-      name: collectionName,
-      description: collectionDescription,
-      products: selectedProducts,
-    });
+export const seedInventoryHistory = async () => {
+  try {
+    const products = await Product.find();
+    let inventoryItems = [];
+    for (let i = 0; i < products.length; i++) {
+      const inventoryItem = {
+        productId: products[i]._id,
+        quantityChanged: products[i].stock,
+        type: "PURCHASE",
+      };
+      inventoryItems.push(inventoryItem);
+    }
+    const savedInventory = await InventoryHistory.insertMany(inventoryItems);
+    console.log("Inventory data seeded successfully");
+    return savedInventory;
+  } catch (error) {
+    console.log(error);
   }
-
-  return collections;
 };
 
 export const seedCartsAndOrder = async () => {
   const products = await seedProducts();
+  await seedInventoryHistory();
   const productIds = products.map((item) => item._id);
 
   const carts = [];
