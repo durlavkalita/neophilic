@@ -76,14 +76,14 @@ export default function Sidebar() {
               <FaHome
                 className={`${
                   pathname.includes("/dashboard/overview")
-                    ? "text-blue-500"
+                    ? "text-blue-700"
                     : ""
                 }`}
               />
               <span
                 className={`ml-2 font-medium capitalize text-sm ${
                   pathname.includes("/dashboard/overview")
-                    ? "text-blue-500"
+                    ? "text-blue-700"
                     : ""
                 }`}
               >
@@ -117,12 +117,12 @@ export default function Sidebar() {
                   <ReturnIcon
                     icon={item.name}
                     className={`${
-                      pathname.includes(item.link) ? "text-blue-500" : ""
+                      pathname.includes(item.link) ? "text-blue-700" : ""
                     }`}
                   />
                   <span
                     className={`ml-2 font-medium capitalize text-sm ${
-                      pathname.includes(item.link) ? "text-blue-500" : ""
+                      pathname.includes(item.link) ? "text-blue-700" : ""
                     }`}
                   >
                     {item.name}

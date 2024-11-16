@@ -56,7 +56,7 @@ export default function Page() {
               {orders?.map((order) => (
                 <div key={order._id}>
                   <div className="flex justify-between items-center space-y-2">
-                    <span className="text-blue-500 text-md cursor-pointer">
+                    <span className="text-blue-700 text-md cursor-pointer">
                       #{order._id}
                     </span>
                     <span className="text-gray-700 text-md">

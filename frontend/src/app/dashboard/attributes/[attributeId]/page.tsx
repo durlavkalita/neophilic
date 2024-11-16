@@ -129,7 +129,7 @@ export default function Page() {
               ))}
               <button
                 onClick={handleAddField}
-                className="text-blue-500 text-sm"
+                className="text-blue-700 text-sm"
               >
                 Add More
               </button>

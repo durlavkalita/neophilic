@@ -43,7 +43,7 @@ export default function Page() {
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
-            <tr className="bg-blue-500 text-white">
+            <tr className="bg-blue-700 text-white">
               <th className="py-2 px-4 border-b text-left"></th>
               <th className="py-2 px-4 border-b text-left">User Name</th>
               <th className="py-2 px-4 border-b text-left">Email</th>
@@ -62,7 +62,7 @@ export default function Page() {
                 <td className="py-2 px-4 border-b">
                   <Link
                     href={`/dashboard/customers/${user._id}`}
-                    className="hover:underline capitalize"
+                    className="hover:underline capitalize text-blue-700"
                   >
                     {user?.firstName + " " + user?.lastName}
                   </Link>
@@ -91,7 +91,7 @@ export default function Page() {
               key={number}
               onClick={() => paginate(number)}
               className={`px-3 py-1 border rounded hover:bg-gray-300 ${
-                currentPage === number ? "bg-blue-500 text-white" : ""
+                currentPage === number ? "bg-blue-700 text-white" : ""
               }`}
             >
               {number}

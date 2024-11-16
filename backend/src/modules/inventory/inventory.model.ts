@@ -21,7 +21,7 @@ const InventoryHistorySchema = new Schema<IInventoryHistory>(
     referenceId: { type: Schema.Types.ObjectId },
     notes: { type: String },
   },
-  { timestamps: { createdAt: "created_at" } }
+  { timestamps: true }
 );
 
 export const InventoryHistory = mongoose.model<IInventoryHistory>(

@@ -10,6 +10,8 @@ import productRoutes from "./modules/products/products.routes.js";
 import cartRoutes from "./modules/cart/cart.routes.js";
 import orderRoutes from "./modules/orders/orders.routes.js";
 import { seedCartsAndOrder } from "./utils/seedScripts.js";
+import statisticRoutes from "./modules/statistics/statistics.routes.js";
+import inventoryRoutes from "./modules/inventory/inventory.routes.js";
 import logger from "./config/logger.config.js";
 
 const app = express();
@@ -30,6 +32,8 @@ app.use("/api/attributes", attributeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/statistics", statisticRoutes);
+app.use("/api/inventory", inventoryRoutes);
 app.get("/api/seed", async (req: Request, res: Response) => {
   try {
     await seedCartsAndOrder();

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -10,12 +10,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import {
-  FiShoppingBag,
-  FiUsers,
-  FiDollarSign,
-  FiPackage,
-} from "react-icons/fi";
+import { FiShoppingBag, FiUsers, FiPackage } from "react-icons/fi";
+import { getDashboardStatistics } from "@/services/dashboardServices";
 
 // Types
 type Product = {
@@ -29,11 +25,6 @@ type Order = {
   id: number;
   total: number;
   date: string;
-};
-
-type Customer = {
-  id: number;
-  name: string;
 };
 
 // Mock data
@@ -53,72 +44,12 @@ const orders: Order[] = [
   { id: 5, total: 999, date: "2023-05-05" },
 ];
 
-const customers: Customer[] = [
-  { id: 1, name: "John Doe" },
-  { id: 2, name: "Jane Smith" },
-  { id: 3, name: "Bob Johnson" },
-];
-
-// Components
 const Header: React.FC = () => (
   <header className="bg-white shadow">
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
     </div>
   </header>
-);
-
-const StatsOverview: React.FC = () => (
-  <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-    {[
-      {
-        title: "Total Products",
-        value: products.length,
-        icon: FiPackage,
-        color: "bg-blue-500",
-      },
-      {
-        title: "Total Orders",
-        value: orders.length,
-        icon: FiShoppingBag,
-        color: "bg-green-500",
-      },
-      {
-        title: "Total Customers",
-        value: customers.length,
-        icon: FiUsers,
-        color: "bg-yellow-500",
-      },
-      {
-        title: "Total Revenue",
-        value: `$${orders.reduce((sum, order) => sum + order.total, 0)}`,
-        icon: FiDollarSign,
-        color: "bg-red-500",
-      },
-    ].map((item, index) => (
-      <div key={index} className="bg-white overflow-hidden shadow rounded-lg">
-        <div className="p-5">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <item.icon
-                className={`h-6 w-6 text-white ${item.color} rounded-full p-1`}
-              />
-            </div>
-            <div className="ml-5 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  {item.title}
-                </dt>
-                <dd className="text-lg font-medium text-gray-900">
-                  {item.value}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
 );
 
 const Charts: React.FC = () => {
@@ -218,12 +149,89 @@ const BestSellers: React.FC = () => {
   );
 };
 
-export default function Component() {
+export default function Page() {
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalCanceledOrders, setTotalCanceledOrders] = useState(0);
+  const [totalCustomers, setTotalCustomers] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchDashboardStatistics = async () => {
+      try {
+        const data = await getDashboardStatistics();
+        console.log(data);
+
+        const statisticsData = data.data;
+        setTotalProducts(statisticsData.totalProducts);
+        setTotalOrders(statisticsData.totalOrders);
+        setTotalCanceledOrders(statisticsData.totalCanceledOrders);
+        setTotalCustomers(statisticsData.totalCustomers);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchDashboardStatistics();
+    return function () {
+      controller.abort();
+    };
+  }, []);
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <StatsOverview />
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              title: "Total Products",
+              value: totalProducts,
+              icon: FiPackage,
+              color: "bg-blue-700",
+            },
+            {
+              title: "Total Orders",
+              value: totalOrders,
+              icon: FiShoppingBag,
+              color: "bg-green-500",
+            },
+            {
+              title: "Total Customers",
+              value: totalCustomers,
+              icon: FiUsers,
+              color: "bg-yellow-500",
+            },
+            {
+              title: "Canceled Orders",
+              value: totalCanceledOrders,
+              icon: FiShoppingBag,
+              color: "bg-red-500",
+            },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="bg-white overflow-hidden shadow rounded-lg"
+            >
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <item.icon
+                      className={`h-6 w-6 text-white ${item.color} rounded-full p-1`}
+                    />
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        {item.title}
+                      </dt>
+                      <dd className="text-lg font-medium text-gray-900">
+                        {item.value}
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
         <Charts />
         <BestSellers />
       </main>

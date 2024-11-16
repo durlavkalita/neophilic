@@ -32,8 +32,10 @@ export default function Page() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [productCategory, setProductCategory] = useState("");
-  const [productStatus, setProductStatus] = useState("ENABLED");
-  const [stock, setStock] = useState("");
+  const [productStatus, setProductStatus] = useState<"ENABLED" | "DISABLED">(
+    "ENABLED"
+  );
+  const [stock, setStock] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [productAttributes, setProductAttributes] = useState<any>({});
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,7 +54,7 @@ export default function Page() {
     formData.append("currentPrice", price);
     formData.append("description", description);
     formData.append("category", productCategory);
-    formData.append("stock", stock);
+    formData.append("stock", String(stock));
     formData.append("attributes", JSON.stringify(productAttributes));
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
@@ -102,10 +104,12 @@ export default function Page() {
         setSku(productData.sku);
         setPrice(productData.basePrice);
         setDescription(productData.description);
-        setProductCategory(productData.category._id);
+        setProductCategory(productData.categoryId._id);
         setProductStatus(productData.status);
         setStock(productData.stock);
-        setProductAttributes(productData.attributes);
+        if ("attributes" in productData) {
+          setProductAttributes(productData.attributes);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -129,7 +133,7 @@ export default function Page() {
         />
         <Link
           href={`/dashboard/products/${productId}/inventory`}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-700 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Inventory History
         </Link>
@@ -335,7 +339,7 @@ export default function Page() {
                 id="stock"
                 name="stock"
                 className="mt-1 block w-full border-2 p-1 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                onChange={(e) => setStock(e.target.value)}
+                onChange={(e) => setStock(Number(e.target.value))}
                 value={stock}
               />
             </div>
@@ -351,7 +355,7 @@ export default function Page() {
                       key={optionIndex}
                       className={`bg-gray-200 px-2 py-1 rounded text-sm cursor-pointer capitalize ${
                         productAttributes[attribute.name] == option
-                          ? "text-blue-500 border-blue-500 border-2"
+                          ? "text-blue-700 border-blue-500 border-2"
                           : ""
                       } `}
                       onClick={() =>

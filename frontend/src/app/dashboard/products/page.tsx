@@ -74,7 +74,7 @@ export default function Page() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Products</h1>
         <Link href={"/dashboard/products/new"}>
-          <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+          <div className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded flex items-center">
             <FaPlus />
             <span className="ml-2 font-medium">Add Product</span>
           </div>
@@ -119,7 +119,7 @@ export default function Page() {
             setItemsPerPage(10);
             // fetchProducts(currentPage, itemsPerPage);
           }}
-          className="text-blue-500 hover:underline text-sm cursor-pointer"
+          className="text-blue-700 hover:underline text-sm cursor-pointer"
         >
           Clear filter
         </span>
@@ -128,7 +128,7 @@ export default function Page() {
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
-            <tr className="bg-blue-200">
+            <tr className="bg-blue-700 text-white">
               <th className="py-2 px-4 border-b text-left">Thumbnail</th>
               <th className="py-2 px-4 border-b text-left">Name</th>
               <th className="py-2 px-4 border-b text-left">Price</th>
@@ -158,7 +158,7 @@ export default function Page() {
                 <td className="py-2 px-4 border-b">
                   <Link
                     href={`/dashboard/products/${product._id}`}
-                    className="hover:underline"
+                    className="hover:underline capitalize text-blue-700"
                   >
                     {product.name}
                   </Link>
@@ -195,7 +195,7 @@ export default function Page() {
               key={number}
               onClick={() => paginate(number)}
               className={`px-3 py-1 border rounded hover:bg-gray-300 ${
-                currentPage === number ? "bg-blue-500 text-white" : ""
+                currentPage === number ? "bg-blue-700 text-white" : ""
               }`}
             >
               {number}

@@ -45,7 +45,7 @@ export default function Page() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Collections</h1>
         <Link href={"/dashboard/collections/new"}>
-          <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+          <div className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded flex items-center">
             <FaPlus />
             <span className="ml-2 font-medium">Add Collection</span>
           </div>
@@ -55,7 +55,7 @@ export default function Page() {
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
-            <tr className="bg-blue-500 text-white">
+            <tr className="bg-blue-700 text-white">
               <th className="py-2 px-4 border-b text-left"></th>
               <th className="py-2 px-4 border-b text-left">Collection Name</th>
               <th className="py-2 px-4 border-b text-left">Values</th>
@@ -99,7 +99,7 @@ export default function Page() {
               key={number}
               onClick={() => paginate(number)}
               className={`px-3 py-1 border rounded hover:bg-gray-300 ${
-                currentPage === number ? "bg-blue-500 text-white" : ""
+                currentPage === number ? "bg-blue-700 text-white" : ""
               }`}
             >
               {number}

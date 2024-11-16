@@ -84,3 +84,13 @@ declare interface OrderWithProduct {
   createdAt: string;
   updatedAt: string;
 }
+
+declare interface Inventory {
+  _id: string;
+  productId: string;
+  quantityChanged: number;
+  type: "STOCK_ADJUSTMENT" | "SALE" | "PURCHASE" | "RETURN";
+  referenceId?: string;
+  notes?: string;
+  createdAt: string;
+}

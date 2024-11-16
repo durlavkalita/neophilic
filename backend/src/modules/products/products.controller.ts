@@ -161,12 +161,10 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
       "categoryId"
     );
     if (!products.length) {
-      res
-        .status(404)
-        .json({
-          message: "Unsuccessful",
-          error: "No products found for this category",
-        });
+      res.status(404).json({
+        message: "Unsuccessful",
+        error: "No products found for this category",
+      });
       return;
     }
     res.status(200).json({ message: "Successful", data: products });
@@ -185,12 +183,10 @@ export const getProductsByCollection = async (req: Request, res: Response) => {
       "products"
     );
     if (!collectionItem?.products.length) {
-      res
-        .status(404)
-        .json({
-          message: "Unsuccessful",
-          error: "No products found for this collection",
-        });
+      res.status(404).json({
+        message: "Unsuccessful",
+        error: "No products found for this collection",
+      });
       return;
     }
 

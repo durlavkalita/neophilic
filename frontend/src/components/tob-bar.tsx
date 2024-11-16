@@ -28,11 +28,11 @@ export default function TopBar() {
               width={50}
               height={50}
             />
-            <span className="font-bold text-xl text-blue-500">Neophilic</span>
+            <span className="font-bold text-xl text-blue-700">Neophilic</span>
           </Link>
           <div className="flex items-center">
             <div
-              className="bg-blue-500 rounded-full h-8 w-8 flex items-center justify-center text-white font-bold cursor-pointer"
+              className="bg-blue-700 rounded-full h-8 w-8 flex items-center justify-center text-white font-bold cursor-pointer"
               onClick={() => setShowDetails((prev) => !prev)}
             >
               {getInitials()}
