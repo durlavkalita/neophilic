@@ -5,12 +5,12 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "build": "npx rimraf dist && npx tsc",
-    "postbuild": "npx mkdirp dist/uploads/users dist/uploads/products",
+    "build": "rimraf dist && tsc",
+    "postbuild": "mkdirp dist/uploads/users dist/uploads/products",
     "prestart": "npm run build",
     "start": "node dist/index.js",
     "preserve": "npm run build",
-    "serve": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\""
+    "serve": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
   },
   "keywords": [],
   "author": "",
