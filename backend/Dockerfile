@@ -4,7 +4,7 @@ RUN apk add --no-cache python3 make g++
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
 COPY . .
 RUN npm run build

@@ -7,7 +7,6 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "postbuild": "mkdirp dist/uploads/users dist/uploads/products",
-    "prestart": "npm run build",
     "start": "node dist/index.js",
     "preserve": "npm run build",
     "serve": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
@@ -25,9 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.3",
     "multer": "^1.4.5-lts.1",
-    "pino": "^9.5.0",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.6.3"
+    "pino": "^9.5.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -37,6 +34,9 @@
     "@types/multer": "^1.4.12",
     "@types/node": "^22.7.5",
     "concurrently": "^9.0.1",
-    "nodemon": "^3.1.7"
+    "mkdirp": "^3.0.1",
+    "nodemon": "^3.1.7",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3"
   }
 }
