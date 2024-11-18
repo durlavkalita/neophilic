@@ -1,6 +1,6 @@
-import { getToken } from "@/lib/utils";
+import { apiBaseUrl, getToken } from "@/lib/utils";
 import { apiClient } from "./apiClient";
-const apiBaseUrl = process.env.BACKEND_URI || "http://localhost:5000/api";
+
 export async function loginService(credentials: {
   email: string;
   password: string;

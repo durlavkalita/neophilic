@@ -1,6 +1,4 @@
-import { getToken } from "@/lib/utils";
-
-const apiBaseUrl = process.env.BACKEND_URI || "http://localhost:5000/api";
+import { apiBaseUrl, getToken } from "@/lib/utils";
 
 export async function apiClient(
   endpoint: string,

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const apiBaseUrl = process.env.BACKEND_URI || "http://localhost:5000/api";
 interface User {
   _id: string;
   email: string;
@@ -39,16 +40,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!accessToken) {
         return;
       }
-      const response = await fetch(
-        "http://localhost:5000/api/auth/verify-token",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const response = await fetch(`${apiBaseUrl}/auth/verify-token`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       const resData = await response.json();
 
       if (response.ok) {
