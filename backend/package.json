@@ -2,11 +2,12 @@
   "name": "nodets-setup",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc",
     "postbuild": "mkdirp dist/uploads/users dist/uploads/products",
+    "prestart": "npm run build",
     "start": "node dist/index.js",
     "preserve": "npm run build",
     "serve": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
