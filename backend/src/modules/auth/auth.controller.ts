@@ -1,17 +1,42 @@
 import { Request, Response } from "express";
-import * as authService from "./auth.services.js";
 import { User } from "./auth.model.js";
 import logger from "../../config/logger.config.js";
+import bcrypt from "bcryptjs";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../../utils/helpers.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const data = await authService.register(email, password);
-    if ("error" in data) {
-      res.status(400).json({ message: "Unsuccessful", error: data.error });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res
+        .status(400)
+        .json({ message: "Unsuccessful", error: "User already exists" });
       return;
     }
-    res.status(201).json({ message: "User register successful", data });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashedPassword });
+    await user.save();
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    const userDetails = {
+      _id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      image: user.image,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      role: user.role,
+    };
+    res.status(201).json({
+      message: "User register successful",
+      data: { accessToken, refreshToken, userDetails },
+    });
     return;
   } catch (error: any) {
     logger.error(error);
@@ -25,12 +50,30 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const data = await authService.login(email, password);
-    if ("error" in data) {
-      res.status(400).json({ message: "Unsuccessful", error: data.error });
+    const user = await User.findOne({ email });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      res
+        .status(400)
+        .json({ message: "Unsuccessful", error: "Invalid credentials" });
       return;
     }
-    res.status(200).json({ message: "Login Successful", data });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    const userDetails = {
+      _id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      image: user.image,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      role: user.role,
+    };
+    res.status(200).json({
+      message: "Login Successful",
+      data: { accessToken, refreshToken, userDetails },
+    });
     return;
   } catch (error: any) {
     logger.error(error);

@@ -14,7 +14,6 @@ import {
   authorizeAdmin,
   authorizeUser,
 } from "../../middleware/auth.middleware.js";
-import { uploadUserImage } from "../../utils/helpers.js";
 
 const router = express.Router();
 
@@ -22,13 +21,7 @@ router.post("/register", validateRegister, registerUser);
 router.post("/login", validateLogin, loginUser);
 router.get("/users/:id", authenticate, getUserById);
 router.get("/users", authenticate, authorizeAdmin, getAllUsers);
-router.put(
-  "/users/:id",
-  authenticate,
-  authorizeUser,
-  uploadUserImage.single("files"),
-  updateUserById
-);
+router.put("/users/:id", authenticate, authorizeUser, updateUserById);
 router.patch(
   "/users/:id/role",
   authenticate,

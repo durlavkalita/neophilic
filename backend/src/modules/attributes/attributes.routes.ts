@@ -4,7 +4,6 @@ import {
   getAttributeById,
   createAttribute,
   updateAttributeById,
-  deleteAttributeById,
 } from "./attributes.controller.js";
 import {
   authenticate,
@@ -15,7 +14,6 @@ import { validateAttribute } from "./attributes.validators.js";
 const router = express.Router();
 
 router.get("/", getAllAttributes);
-router.get("/:id", getAttributeById);
 router.post(
   "/",
   authenticate,
@@ -23,7 +21,13 @@ router.post(
   validateAttribute,
   createAttribute
 );
-router.put("/:id", authenticate, authorizeAdmin, updateAttributeById);
-router.delete("/:id", authenticate, authorizeAdmin, deleteAttributeById);
+router.get("/:id", getAttributeById);
+router.put(
+  "/:id",
+  authenticate,
+  authorizeAdmin,
+  validateAttribute,
+  updateAttributeById
+);
 
 export default router;

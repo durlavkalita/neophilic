@@ -5,9 +5,20 @@ import logger from "../../config/logger.config.js";
 export const getAllCategories = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string);
   const limit = parseInt(req.query.limit as string);
+  const status = req.query.status;
+  let searchQuery;
+  if (status) {
+    if (status == "all") {
+      searchQuery = {};
+    } else {
+      searchQuery = { status: status };
+    }
+  } else {
+    searchQuery = { status: "ENABLED" };
+  }
   if (!page && !limit) {
     try {
-      const categories = await Category.find();
+      const categories = await Category.find(searchQuery);
       res.status(200).json({ message: "Successful", data: categories });
       return;
     } catch (error: any) {
@@ -18,7 +29,7 @@ export const getAllCategories = async (req: Request, res: Response) => {
   } else {
     try {
       const skip = (page - 1) * limit;
-      const categories = await Category.find()
+      const categories = await Category.find(searchQuery)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -87,25 +98,6 @@ export const updateCategoryById = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({ message: "Successful", data: updatedCategory });
-    return;
-  } catch (error: any) {
-    logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
-    return;
-  }
-};
-
-export const deleteCategoryById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  try {
-    const deletedCategory = await Category.findByIdAndDelete(id);
-    if (!deletedCategory) {
-      res
-        .status(404)
-        .json({ message: "Category not found", error: "Category not found" });
-      return;
-    }
-    res.status(204).json({ message: "Successful" });
     return;
   } catch (error: any) {
     logger.error(error);

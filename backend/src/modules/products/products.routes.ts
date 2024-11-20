@@ -6,7 +6,6 @@ import {
   updateProductById,
   deleteProductById,
   getProductsByCategory,
-  getProductsByCollection,
   updateProductStatus,
   searchProducts,
 } from "./products.controller.js";
@@ -14,7 +13,8 @@ import {
   authenticate,
   authorizeAdmin,
 } from "../../middleware/auth.middleware.js";
-import { uploadProductImage } from "../../utils/helpers.js";
+import { upload } from "../s3_storage/index.js";
+import { validateProduct } from "./products.validators.js";
 
 const router = express.Router();
 
@@ -25,7 +25,8 @@ router.post(
   "/",
   authenticate,
   authorizeAdmin,
-  uploadProductImage.array("files"),
+  validateProduct,
+  upload.array("photos", 3),
   createProduct
 );
 router.put("/:id", authenticate, authorizeAdmin, updateProductById);
@@ -33,7 +34,6 @@ router.delete("/:id", authenticate, authorizeAdmin, deleteProductById);
 
 // Additional Routes
 router.get("/category/:categoryId", getProductsByCategory);
-router.get("/collection/:collectionId", getProductsByCollection);
 router.patch("/:id/status", updateProductStatus);
 
 export default router;

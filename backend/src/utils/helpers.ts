@@ -1,6 +1,7 @@
 import { fileURLToPath } from "url";
 import path from "path";
-import multer from "multer";
+import jwt from "jsonwebtoken";
+import { IUser } from "../modules/auth/auth.model.js";
 
 export const getRootDir = () => {
   // console.log(import.meta.url);
@@ -11,33 +12,24 @@ export const getRootDir = () => {
   return rootPath;
 };
 
-function generateUniqueFileName(file: Express.Multer.File): string {
+export function generateUniqueFileName(file: Express.Multer.File): string {
   const timestamp = Date.now();
   const randomSuffix = Math.floor(Math.random() * 10000);
   const sanitizedOriginalName = file.originalname.replace(/\s+/g, "-");
   return `${timestamp}-${randomSuffix}-${sanitizedOriginalName}`;
 }
 
-// Product Image Storage
-const productStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(getRootDir(), "../uploads/products"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, generateUniqueFileName(file));
-  },
-});
+export const ACCESS_TOKEN_SECRET =
+  process.env.ACCESS_TOKEN_SECRET || "jwtaccesssecret";
+export const REFRESH_TOKEN_SECRET =
+  process.env.REFRESH_TOKEN_SECRET || "jwtrefreshsecret";
 
-// User Profile Image Storage
-const userStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(getRootDir(), "../uploads/users"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, generateUniqueFileName(file));
-  },
-});
+export const generateAccessToken = (user: IUser) => {
+  return jwt.sign({ id: user.id, role: user.role }, ACCESS_TOKEN_SECRET, {
+    expiresIn: "1d",
+  });
+};
 
-// Multer Instances
-export const uploadProductImage = multer({ storage: productStorage });
-export const uploadUserImage = multer({ storage: userStorage });
+export const generateRefreshToken = (user: IUser) => {
+  return jwt.sign({ id: user.id }, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+};

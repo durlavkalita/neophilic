@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Product } from "./products.model.js";
-import { CollectionItem } from "../collections/collections.model.js";
 import { InventoryHistory } from "../inventory/inventory.model.js";
 import logger from "../../config/logger.config.js";
 
@@ -16,9 +15,10 @@ export const createProduct = async (req: Request, res: Response) => {
     const attributes = req.body.attributes;
 
     const parsedAttributes = JSON.parse(attributes);
+    console.log(req.files?.length, req.files);
 
     const images = (req.files as any).map(
-      (item: { filename: any }) => item.filename
+      (item: { location: any }) => item.location
     );
 
     const newProduct = new Product({
@@ -57,9 +57,20 @@ export const createProduct = async (req: Request, res: Response) => {
 export const getAllProducts = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
+  const status = req.query.status;
+  let searchQuery;
+  if (status) {
+    if (status == "all") {
+      searchQuery = {};
+    } else {
+      searchQuery = { status: status };
+    }
+  } else {
+    searchQuery = { status: "ENABLED" };
+  }
   try {
     const skip = (page - 1) * limit;
-    const products = await Product.find()
+    const products = await Product.find(searchQuery)
       .populate("categoryId")
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -168,31 +179,6 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({ message: "Successful", data: products });
-    return;
-  } catch (error: any) {
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
-    return;
-  }
-};
-
-export const getProductsByCollection = async (req: Request, res: Response) => {
-  const { collectionId } = req.params;
-
-  try {
-    const collectionItem = await CollectionItem.findById(collectionId).populate(
-      "products"
-    );
-    if (!collectionItem?.products.length) {
-      res.status(404).json({
-        message: "Unsuccessful",
-        error: "No products found for this collection",
-      });
-      return;
-    }
-
-    res
-      .status(200)
-      .json({ message: "Successful", data: collectionItem.products });
     return;
   } catch (error: any) {
     res.status(500).json({ message: "Unsuccessful", error: error.message });
