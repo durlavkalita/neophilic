@@ -2,12 +2,14 @@ declare interface Category {
   _id: string;
   name: string;
   description: string;
+  status: "ENABLED" | "DISABLED";
 }
 
 declare interface Attribute {
   _id: string;
   name: string;
   values: string[];
+  status: "ENABLED" | "DISABLED";
 }
 
 declare interface Product {
@@ -27,15 +29,6 @@ declare interface Product {
   status: "ENABLED" | "DISABLED";
 }
 
-declare interface CollectionItem {
-  _id: string;
-  name: string;
-  description: string;
-  startDate?: Date;
-  endDate?: Date;
-  products: Product[];
-}
-
 declare interface User {
   _id: string;
   email: string;
@@ -44,7 +37,7 @@ declare interface User {
   lastName: string;
   phoneNumber: string;
   address: string;
-  image: string;
+  images: string;
   createdAt: string;
   updatedAt: string;
 }

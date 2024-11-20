@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import { User } from "./auth.model.js";
 import logger from "../../config/logger.config.js";
 import bcrypt from "bcryptjs";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../../utils/helpers.js";
+import { generateAccessToken } from "../../utils/helpers.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -22,7 +19,6 @@ export const registerUser = async (req: Request, res: Response) => {
     await user.save();
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
     const userDetails = {
       _id: user._id,
       email: user.email,
@@ -35,7 +31,7 @@ export const registerUser = async (req: Request, res: Response) => {
     };
     res.status(201).json({
       message: "User register successful",
-      data: { accessToken, refreshToken, userDetails },
+      data: { accessToken, userDetails },
     });
     return;
   } catch (error: any) {
@@ -59,7 +55,6 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
     const userDetails = {
       _id: user.id,
       email: user.email,
@@ -72,7 +67,7 @@ export const loginUser = async (req: Request, res: Response) => {
     };
     res.status(200).json({
       message: "Login Successful",
-      data: { accessToken, refreshToken, userDetails },
+      data: { accessToken, userDetails },
     });
     return;
   } catch (error: any) {

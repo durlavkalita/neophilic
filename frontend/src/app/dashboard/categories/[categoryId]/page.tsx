@@ -16,11 +16,13 @@ export default function Page() {
 
   const [categoryName, setCategoryName] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<"ENABLED" | "DISABLED">("ENABLED");
 
   const handleSubmit = async () => {
     const reqBody = {
       name: categoryName,
       description,
+      status: status,
     };
 
     if (categoryId == "new") {
@@ -44,6 +46,7 @@ export default function Page() {
         const categoryData = data.data;
         setCategoryName(categoryData.name);
         setDescription(categoryData.description);
+        setStatus(categoryData.status);
       } catch (error) {
         console.log(error);
       }
@@ -86,6 +89,38 @@ export default function Page() {
                 className="mt-1 block w-full border-2 p-1 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 value={categoryName}
               />
+            </div>
+            <div>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Status
+              </label>
+              <div className="flex flex-col justify-around items-start">
+                <div className="flex items-center my-1">
+                  <input
+                    type="radio"
+                    id="enabled"
+                    value="enabled"
+                    checked={status === "ENABLED"}
+                    onChange={() => setStatus("ENABLED")}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm ml-2">Enabled</span>
+                </div>
+                <div className="flex items-center my-1">
+                  <input
+                    type="radio"
+                    id="disabled"
+                    value="disabled"
+                    checked={status === "DISABLED"}
+                    onChange={() => setStatus("DISABLED")}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm ml-2">Disabled</span>
+                </div>
+              </div>
             </div>
             <div>
               <label

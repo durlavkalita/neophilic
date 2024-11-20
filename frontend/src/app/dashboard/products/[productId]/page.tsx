@@ -3,7 +3,11 @@
 import TitleWithBackButton from "@/components/title-with-back-button";
 import { getAllAttributes } from "@/services/attributeServices";
 import { getAllCategories } from "@/services/categoryServices";
-import { createProduct, getProductById } from "@/services/productServices";
+import {
+  createProduct,
+  getProductById,
+  updateProductById,
+} from "@/services/productServices";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -32,14 +36,13 @@ export default function Page() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [productCategory, setProductCategory] = useState("");
-  const [productStatus, setProductStatus] = useState<"ENABLED" | "DISABLED">(
-    "ENABLED"
-  );
+  const [status, setStatus] = useState<"ENABLED" | "DISABLED">("ENABLED");
   const [stock, setStock] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [productAttributes, setProductAttributes] = useState<any>({});
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [files, setFiles] = useState<any>([]);
+  const [productPhotos, setProductPhotos] = useState<string[]>();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFileChange = (event: { target: { files: any } }) => {
@@ -56,12 +59,18 @@ export default function Page() {
     formData.append("category", productCategory);
     formData.append("stock", String(stock));
     formData.append("attributes", JSON.stringify(productAttributes));
+    formData.append("status", status);
     for (let i = 0; i < files.length; i++) {
-      formData.append("files", files[i]);
+      formData.append("photos", files[i]);
     }
 
-    const res = await createProduct(formData);
-    console.log(res);
+    if (productId == "new") {
+      const res = await createProduct(formData);
+      console.log(res);
+    } else {
+      const res = await updateProductById(productId, formData);
+      console.log(res);
+    }
 
     router.push("/dashboard/products");
   };
@@ -104,12 +113,13 @@ export default function Page() {
         setSku(productData.sku);
         setPrice(productData.basePrice);
         setDescription(productData.description);
-        setProductCategory(productData.categoryId._id);
-        setProductStatus(productData.status);
+        setStatus(productData.status);
         setStock(productData.stock);
+        setProductCategory(productData.categoryId);
         if ("attributes" in productData) {
           setProductAttributes(productData.attributes);
         }
+        setProductPhotos(productData.images);
       } catch (error) {
         console.log(error);
       }
@@ -264,6 +274,24 @@ export default function Page() {
                 ""
               )}
             </div>
+            {productPhotos && productPhotos.length > 0 ? (
+              <div className="mt-4">
+                <h1 className="text-sm">Uploaded Photos</h1>
+                <ul>
+                  {productPhotos.map((photoUrl, index) => (
+                    <li key={index}>
+                      <a
+                        href={photoUrl}
+                        target="_blank"
+                        className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer"
+                      >{`Image ${index + 1}`}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
 
@@ -308,8 +336,8 @@ export default function Page() {
                     type="radio"
                     id="enabled"
                     value="enabled"
-                    checked={productStatus === "ENABLED"}
-                    onChange={() => setProductStatus("ENABLED")}
+                    checked={status === "ENABLED"}
+                    onChange={() => setStatus("ENABLED")}
                     className="w-4 h-4"
                   />
                   <span className="text-sm ml-2">Enabled</span>
@@ -319,8 +347,8 @@ export default function Page() {
                     type="radio"
                     id="disabled"
                     value="disabled"
-                    checked={productStatus === "DISABLED"}
-                    onChange={() => setProductStatus("DISABLED")}
+                    checked={status === "DISABLED"}
+                    onChange={() => setStatus("DISABLED")}
                     className="w-4 h-4"
                   />
                   <span className="text-sm ml-2">Disabled</span>
@@ -376,7 +404,7 @@ export default function Page() {
           className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={handleSubmit}
         >
-          Create Product
+          {productId == "new" ? "Create Product" : "Update Product"}
         </button>
       </div>
     </div>

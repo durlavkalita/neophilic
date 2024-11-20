@@ -2,7 +2,7 @@ import { apiBaseUrl, getToken } from "@/lib/utils";
 
 export async function getAllAttributes(page?: string, limit?: string) {
   const response = await fetch(
-    `${apiBaseUrl}/attributes?page=${page}&limit=${limit}`,
+    `${apiBaseUrl}/attributes?page=${page}&limit=${limit}&status=all`,
     {
       method: "GET",
     }
@@ -14,6 +14,7 @@ export async function getAllAttributes(page?: string, limit?: string) {
 export async function createAttribute(reqBody: {
   name: string;
   values: string[];
+  status: "ENABLED" | "DISABLED";
 }) {
   const response = await fetch(`${apiBaseUrl}/attributes`, {
     method: "POST",

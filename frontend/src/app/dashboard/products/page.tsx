@@ -117,7 +117,7 @@ export default function Page() {
             setSearchTerm("");
             setCurrentPage(1);
             setItemsPerPage(10);
-            // fetchProducts(currentPage, itemsPerPage);
+            fetchProducts(currentPage, itemsPerPage);
           }}
           className="text-blue-700 hover:underline text-sm cursor-pointer"
         >

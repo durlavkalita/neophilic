@@ -56,6 +56,7 @@ export default function Page() {
               <th className="py-2 px-4 border-b text-left"></th>
               <th className="py-2 px-4 border-b text-left">Attribute Name</th>
               <th className="py-2 px-4 border-b text-left">Values</th>
+              <th className="py-2 px-4 border-b text-left">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -77,6 +78,15 @@ export default function Page() {
                 </td>
                 <td className="py-2 px-4 border-b">
                   {attribute.values.join(", ").toUpperCase()}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <span
+                    className={`ml-4 inline-block w-3 h-3 rounded-full ${
+                      attribute.status === "ENABLED"
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                    }`}
+                  ></span>
                 </td>
               </tr>
             ))}

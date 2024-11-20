@@ -2,7 +2,7 @@ import { apiBaseUrl, getToken } from "@/lib/utils";
 
 export async function getAllCategories(page?: string, limit?: string) {
   const response = await fetch(
-    `${apiBaseUrl}/categories?page=${page}&limit=${limit}`,
+    `${apiBaseUrl}/categories?page=${page}&limit=${limit}&status=all`,
     {
       method: "GET",
     }
@@ -14,6 +14,7 @@ export async function getAllCategories(page?: string, limit?: string) {
 export async function createCategory(reqBody: {
   name: string;
   description: string;
+  status: "ENABLED" | "DISABLED";
 }) {
   const response = await fetch(`${apiBaseUrl}/categories`, {
     method: "POST",

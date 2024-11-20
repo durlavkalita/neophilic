@@ -25,11 +25,16 @@ router.post(
   "/",
   authenticate,
   authorizeAdmin,
-  validateProduct,
-  upload.array("photos", 3),
+  upload.array("photos"),
   createProduct
 );
-router.put("/:id", authenticate, authorizeAdmin, updateProductById);
+router.put(
+  "/:id",
+  authenticate,
+  authorizeAdmin,
+  upload.array("photos"),
+  updateProductById
+);
 router.delete("/:id", authenticate, authorizeAdmin, deleteProductById);
 
 // Additional Routes

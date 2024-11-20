@@ -15,7 +15,6 @@ export const createProduct = async (req: Request, res: Response) => {
     const attributes = req.body.attributes;
 
     const parsedAttributes = JSON.parse(attributes);
-    console.log(req.files?.length, req.files);
 
     const images = (req.files as any).map(
       (item: { location: any }) => item.location
@@ -71,7 +70,6 @@ export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const skip = (page - 1) * limit;
     const products = await Product.find(searchQuery)
-      .populate("categoryId")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -95,7 +93,7 @@ export const getProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const product = await Product.findById(id).populate("categoryId");
+    const product = await Product.findById(id);
     if (!product) {
       res
         .status(404)
@@ -113,9 +111,29 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const updateProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updates = req.body;
+  let updates = req.body;
+  if ("attributes" in updates) {
+    const parsedAttributes = JSON.parse(updates.attributes);
+    updates["attributes"] = parsedAttributes;
+  }
 
   try {
+    let newImages: string[] = [];
+    if (req.files && Array.isArray(req.files)) {
+      newImages = (req.files as any).map(
+        (item: { location: string }) => item.location
+      );
+    }
+    const product = await Product.findById(id);
+    if (!product) {
+      res
+        .status(404)
+        .json({ message: "Unsuccessful", error: "Product not found" });
+      return;
+    }
+    if (newImages.length > 0) {
+      updates.images = [...(product.images || []), ...newImages];
+    }
     const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
       new: true,
     });

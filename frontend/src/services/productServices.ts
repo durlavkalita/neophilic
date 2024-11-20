@@ -2,7 +2,7 @@ import { apiBaseUrl, getToken } from "@/lib/utils";
 
 export async function getAllProducts(page?: string, limit?: string) {
   const response = await fetch(
-    `${apiBaseUrl}/products?page=${page}&limit=${limit}`,
+    `${apiBaseUrl}/products?page=${page}&limit=${limit}&status=all`,
     {
       method: "GET",
     }

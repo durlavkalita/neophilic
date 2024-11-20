@@ -17,13 +17,13 @@ export default function Page() {
 
   const [attributeName, setAttributeName] = useState("");
   const [values, setValues] = useState([""]);
-
+  const [status, setStatus] = useState<"ENABLED" | "DISABLED">("ENABLED");
   const handleSubmit = async () => {
     const reqBody = {
       name: attributeName,
       values: values.filter((v) => v.length != 0),
+      status: status,
     };
-    console.log(reqBody.values);
 
     if (attributeId == "new") {
       const res = await createAttribute(reqBody);
@@ -46,6 +46,7 @@ export default function Page() {
         const attributeData = data.data;
         setAttributeName(attributeData.name);
         setValues(attributeData.values);
+        setStatus(attributeData.status);
       } catch (error) {
         console.log(error);
       }
@@ -105,6 +106,39 @@ export default function Page() {
                 value={attributeName}
               />
             </div>
+            <div>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Status
+              </label>
+              <div className="flex flex-col justify-around items-start">
+                <div className="flex items-center my-1">
+                  <input
+                    type="radio"
+                    id="enabled"
+                    value="enabled"
+                    checked={status === "ENABLED"}
+                    onChange={() => setStatus("ENABLED")}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm ml-2">Enabled</span>
+                </div>
+                <div className="flex items-center my-1">
+                  <input
+                    type="radio"
+                    id="disabled"
+                    value="disabled"
+                    checked={status === "DISABLED"}
+                    onChange={() => setStatus("DISABLED")}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm ml-2">Disabled</span>
+                </div>
+              </div>
+            </div>
+            <div></div>
             <div>
               <label
                 htmlFor="values"

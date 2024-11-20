@@ -56,6 +56,7 @@ export default function Page() {
               <th className="py-2 px-4 border-b text-left"></th>
               <th className="py-2 px-4 border-b text-left">Category Name</th>
               <th className="py-2 px-4 border-b text-left">Description</th>
+              <th className="py-2 px-4 border-b text-left">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -77,6 +78,15 @@ export default function Page() {
                 </td>
                 <td className="py-2 px-4 border-b">
                   {category.description.slice(0, 40)}...
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <span
+                    className={`ml-4 inline-block w-3 h-3 rounded-full ${
+                      category.status === "ENABLED"
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                    }`}
+                  ></span>
                 </td>
               </tr>
             ))}
