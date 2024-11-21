@@ -1,95 +1,78 @@
-# Auth & User Management
+# E-Commerce Application
 
-POST /api/auth/register
-POST /api/auth/login
-POST /api/auth/login/{provider} # For OAuth (Google, Facebook etc.)
-POST /api/auth/refresh-token
-POST /api/auth/logout
-GET /api/auth/me # Get current user profile
-PUT /api/auth/me # Update profile
-GET /api/users/{id} # Admin only
-PUT /api/users/{id}/role # Admin only
+## How to use
 
-# Categories
+```bash
+git clone https://github.com/durlavkalita/neophilic.git
+cd neophilic
+touch .env # check variables required from docker-compose.yml
+docker-compose up -d # --build for fresh
+docker-compose down # to stop
+```
+---
 
-GET /api/categories
-GET /api/categories/{id}
-POST /api/categories # Admin only
-PUT /api/categories/{id} # Admin only
-DELETE /api/categories/{id} # Admin only
+## To-Do
 
-# Attributes
+### Basics
+- [x] Frontend, Backend and db integration via Docker.
+- [x] Image storage.
+- [ ] Track inventory records
+- [ ] Product Review system
+- [ ] OTP based sign-in
+- [ ] Payment gateway
 
-GET /api/attributes
-GET /api/attributes/{id}
-POST /api/attributes # Admin only
-PUT /api/attributes/{id} # Admin only
-DELETE /api/attributes/{id}# Admin only
+### Codebase Review and Optimization
+- [ ] Review codebase for redundancy and clean up unnecessary code.
+- [ ] Ensure consistent and standardized error handling.
+- [ ] Implement structured and centralized logging.
+- [ ] Optimize MongoDB queries and indexes for performance.
 
-# Collections
+### Testing
+- [ ] Write unit tests for critical business logic and API endpoints.
+- [ ] Add integration tests to verify interactions between services.
+- [ ] Implement end-to-end tests for user workflows (e.g., Cypress/Playwright).
+- [ ] Perform load testing to evaluate performance under stress.
+- [ ] Conduct security testing for potential vulnerabilities.
 
-GET /api/collections
-GET /api/collections/{id}
-POST /api/collections # Admin only
-PUT /api/collections/{id} # Admin only
-DELETE /api/collections/{id}# Admin only
+### Database Optimization
+- [ ] Set up proper indexing in MongoDB for commonly queried fields.
+- [ ] Enable automated database backups.
+- [ ] Test database restoration processes.
+- [ ] Explore MongoDB sharding and replication for scalability and availability.
 
-# Products
+### Security Enhancements
+- [ ] Verify strict role-based authentication and authorization.
+- [ ] Use secrets management for environment variables (e.g., AWS Secrets Manager).
+- [ ] Enforce HTTPS with SSL/TLS certificates.
+- [ ] Implement rate limiting on API endpoints.
+- [ ] Double-check all input validation and sanitization.
 
-GET /api/products
-GET /api/products/{id}
-GET /api/products/search
-GET /api/products/category/{categoryId}
-GET /api/products/collection/{collectionId}
-POST /api/products # Admin only
-PUT /api/products/{id} # Admin only
-DELETE /api/products/{id} # Admin only
-PATCH /api/products/{id}/status
+### DevOps and Deployment
+- [ ] Set up a CI/CD pipeline for automated deployments.
+- [ ] Configure separate environments for development, staging, and production.
+- [ ] Integrate monitoring tools (e.g., Prometheus, Grafana) for performance tracking.
+- [ ] Review Docker Compose setup for scalability or transition to Kubernetes if needed.
 
-# Cart
+### Frontend Optimization
+- [ ] Use Lighthouse to audit performance, accessibility, and SEO.
+- [ ] Implement caching for static assets and configure a CDN.
+- [ ] Test responsive design on multiple devices and screen sizes.
 
-GET /api/cart
-POST /api/cart/items # Add item to cart
-PUT /api/cart/items/{id} # Update quantity
-DELETE /api/cart/items/{id}
-DELETE /api/cart # Clear cart
+### Documentation
+- [x] Finalize and publish Swagger or Postman collections for API documentation.
+- [ ] Document the codebase for easier onboarding and maintenance.
+- [ ] Create user guides for admin and customer workflows.
 
-# Orders
+### Backup and Disaster Recovery
+- [ ] Define and document a backup strategy for critical data and files.
+- [ ] Create a disaster recovery plan, including failover strategies.
 
-POST /api/orders # Create order (from cart or direct)
-GET /api/orders
-GET /api/orders/{id}
-GET /api/orders/{id}/track # Get tracking details
-GET /api/orders/{id}/invoice
-PATCH /api/orders/{id}/cancel
+### Feedback Collection
+- [ ] Integrate analytics tools (e.g., Google Analytics, Mixpanel) to track user behavior.
+- [ ] Set up error reporting tools (e.g., Sentry) for frontend and backend.
+- [ ] Add a feedback form for users to report issues or suggestions.
 
-# Order Status Updates
-
-PUT /api/orders/{id}/status # Update order status (admin/vendor only)
-POST /api/orders/{id}/verify-delivery # OTP verification endpoint
-
-# Inventory
-
-GET /api/inventory/products/{productId}
-PUT /api/inventory/products/{productId} # Update stock (admin only)
-
-# Payment
-
-POST /api/payments/initialize # Initialize payment gateway
-POST /api/payments/verify # Verify payment
-POST /api/payments/cod # Create COD order
-GET /api/payments/history
-POST /api/payments/retry
-
-# Customer Support
-
-POST /api/support/ticket
-GET /api/support/tickets
-PATCH /api/support/tickets/{id}
-
-# how to use
-
-- git clone https://github.com/durlavkalita/neophilic.git
-- cd neophilic
-- docker-compose up -d (--build for fresh)
-- docker-compose down (to stop)
+### Deployment Review
+- [ ] Verify domain configuration for production deployment.
+- [ ] Set up a load balancer.
+- [ ] Review hosting.

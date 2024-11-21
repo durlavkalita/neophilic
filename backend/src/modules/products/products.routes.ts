@@ -4,9 +4,7 @@ import {
   getProductById,
   createProduct,
   updateProductById,
-  deleteProductById,
   getProductsByCategory,
-  updateProductStatus,
   searchProducts,
 } from "./products.controller.js";
 import {
@@ -35,10 +33,8 @@ router.put(
   upload.array("photos"),
   updateProductById
 );
-router.delete("/:id", authenticate, authorizeAdmin, deleteProductById);
 
 // Additional Routes
 router.get("/category/:categoryId", getProductsByCategory);
-router.patch("/:id/status", updateProductStatus);
 
 export default router;

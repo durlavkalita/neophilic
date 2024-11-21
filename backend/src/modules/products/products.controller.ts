@@ -162,26 +162,6 @@ export const updateProductById = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteProductById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(id);
-    if (!deletedProduct) {
-      res
-        .status(404)
-        .json({ message: "Unsuccessful", error: "Product not found" });
-      return;
-    }
-    res.status(204).json({ message: "Product deleted successfully" });
-    return;
-  } catch (error: any) {
-    logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
-    return;
-  }
-};
-
 export const getProductsByCategory = async (req: Request, res: Response) => {
   const { categoryId } = req.params;
 
@@ -204,33 +184,6 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const updateProductStatus = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  try {
-    const product = await Product.findById(id);
-    if (!product) {
-      res
-        .status(404)
-        .json({ message: "Unsuccessful", error: "Product not found" });
-      return;
-    }
-
-    product.status = product.status === "ENABLED" ? "DISABLED" : "ENABLED";
-
-    await product.save();
-
-    res.status(200).json({
-      message: `Product status updated to ${product.status}`,
-      product,
-    });
-  } catch (error: any) {
-    logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
-    return;
-  }
-};
-
 export const searchProducts = async (req: Request, res: Response) => {
   const keyword = req.query.keyword as string;
   const page = parseInt(req.query.page as string) || 1;
@@ -248,7 +201,6 @@ export const searchProducts = async (req: Request, res: Response) => {
     const products = await Product.find({
       name: { $regex: keyword as string, $options: "i" },
     })
-      .populate("categoryId")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
