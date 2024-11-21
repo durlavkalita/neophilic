@@ -18,4 +18,4 @@ RUN npm ci --only=production && \
   npm cache clean --force
 
 EXPOSE 5000
-CMD ["npm", "start"]
+CMD ["npm", "run", "prod"]

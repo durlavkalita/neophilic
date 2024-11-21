@@ -9,6 +9,7 @@
     "postbuild": "mkdirp dist/uploads/users dist/uploads/products",
     "prestart": "npm run build",
     "start": "node dist/index.js",
+    "prod": "node dist/index.js",
     "preserve": "npm run build",
     "serve": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
   },
