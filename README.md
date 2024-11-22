@@ -16,7 +16,7 @@ docker-compose down # to stop
 ### Basics
 - [x] Frontend, Backend and db integration via Docker.
 - [x] Image storage.
-- [ ] Track inventory records
+- [x] Track inventory records
 - [ ] Product Review system
 - [ ] OTP based sign-in
 - [ ] Payment gateway

@@ -149,6 +149,7 @@ export const seedInventoryHistory = async () => {
       const inventoryItem = {
         productId: products[i]._id,
         quantityChanged: products[i].stock,
+        quantityTotal: products[i].stock,
         type: "PURCHASE",
       };
       inventoryItems.push(inventoryItem);

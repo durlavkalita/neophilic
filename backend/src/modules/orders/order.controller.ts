@@ -58,10 +58,10 @@ export const createOrder = async (req: Request, res: Response) => {
   } = req.body;
 
   try {
-    // Calculate total price from order items
     let totalAmount = 0;
-    // Process each item to check stock and calculate total amount
     let orderItemsMod = [];
+    let inventoryUpdates = [];
+
     for (const item of orderItems) {
       const { productId, quantity } = item;
       const product = await Product.findById(productId);
@@ -86,40 +86,48 @@ export const createOrder = async (req: Request, res: Response) => {
       product.stock -= quantity;
       await product.save();
 
-      // Add inventory history entry for sale
-      await InventoryHistory.create([
-        {
-          productId,
-          quantityChanged: product.stock - quantity, // Stock decreases in sale
-          type: "SALE",
-          referenceId: null,
-          notes: "Product Sale",
-        },
-      ]);
+      inventoryUpdates.push({
+        productId,
+        quantityChanged: quantity,
+        quantityTotal: product.stock,
+        type: "SALE",
+        referenceId: null,
+        notes: "Product Sale",
+      });
+
       const itemsDict = {
         productId: productId,
         quantity: quantity,
         priceAtTime: product.currentPrice,
       };
       orderItemsMod.push(itemsDict);
-      // Calculate total price
       totalAmount += quantity * Number(product.currentPrice);
     }
 
     // Create the order
-    const order = await Order.create([
-      {
-        userId: userId,
-        orderItems: orderItemsMod,
-        totalAmount,
-        deliveryAddress,
-        phoneNumber,
-        paymentStatus: paymentStatus || "PENDING",
-        paymentMethod: paymentMethod || "COD",
-        currentStatus: currentStatus || "PENDING",
-      },
-    ]);
+    const order = await Order.create({
+      userId: userId,
+      orderItems: orderItemsMod,
+      totalAmount,
+      deliveryAddress,
+      phoneNumber,
+      paymentStatus: paymentStatus || "PENDING",
+      paymentMethod: paymentMethod || "COD",
+      currentStatus: currentStatus || "PENDING",
+    });
 
+    if (!order) {
+      res.status(500).json({
+        message: "Unsuccessful",
+        error: "Failed to create order.",
+      });
+      return;
+    }
+    const inventoryHistoryEntries = inventoryUpdates.map((entry) => ({
+      ...entry,
+      referenceId: order._id,
+    }));
+    await InventoryHistory.insertMany(inventoryHistoryEntries);
     res.status(201).json({ message: "Successful", data: order });
     return;
   } catch (error: any) {
@@ -243,13 +251,16 @@ export const cancelOrder = async (req: Request, res: Response) => {
       // Update product's current stock
       const product = await Product.findById(productId);
       if (product) {
+        console.log(product);
+
         product.stock += quantity;
-        await product.save();
+        const updatedProduct = await product.save();
 
         // Record the inventory update
         const inventoryEntry = new InventoryHistory({
           productId,
           quantityChanged: quantity,
+          quantityTotal: updatedProduct.stock,
           type: "RETURN",
           referenceId: order._id,
           notes: "Order cancellation return",

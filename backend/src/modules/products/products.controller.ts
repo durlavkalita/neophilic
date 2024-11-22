@@ -37,6 +37,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const inventoryEntry = new InventoryHistory({
       productId: savedProduct._id,
       quantityChanged: savedProduct.stock,
+      quantityTotal: savedProduct.stock,
       type: "PURCHASE",
       referenceId: null,
       notes: "Product Created",
@@ -112,6 +113,8 @@ export const getProductById = async (req: Request, res: Response) => {
 export const updateProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
   let updates = req.body;
+  let prevStock;
+  const newStock = updates.stock;
   if ("attributes" in updates) {
     const parsedAttributes = JSON.parse(updates.attributes);
     updates["attributes"] = parsedAttributes;
@@ -131,6 +134,7 @@ export const updateProductById = async (req: Request, res: Response) => {
         .json({ message: "Unsuccessful", error: "Product not found" });
       return;
     }
+    prevStock = product.stock;
     if (newImages.length > 0) {
       updates.images = [...(product.images || []), ...newImages];
     }
@@ -143,10 +147,11 @@ export const updateProductById = async (req: Request, res: Response) => {
         .json({ message: "Unsuccessful", error: "Product not found" });
       return;
     }
-    if ("stock" in updates) {
+    if ("stock" in updates && prevStock != newStock) {
       const inventoryEntry = new InventoryHistory({
         productId: updatedProduct._id,
-        quantityChanged: updatedProduct.stock,
+        quantityChanged: Math.abs(newStock - prevStock),
+        quantityTotal: updatedProduct.stock,
         type: "STOCK_ADJUSTMENT",
         referenceId: null,
         notes: "Inventory Updated",
