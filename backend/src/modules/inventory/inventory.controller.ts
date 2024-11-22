@@ -16,9 +16,11 @@ export const getInventoryHistory = async (req: Request, res: Response) => {
     const histories = await InventoryHistory.find(searchQuery);
     res.status(200).json({ message: "Successful", data: histories });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };

@@ -14,9 +14,11 @@ export const getCart = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: cart });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -26,7 +28,7 @@ export const addToCart = async (req: Request, res: Response) => {
   const { productId, quantity } = req.body;
 
   try {
-    let cart = await Cart.findOne({
+    const cart = await Cart.findOne({
       userId: userId,
       productId: productId,
     });
@@ -47,9 +49,11 @@ export const addToCart = async (req: Request, res: Response) => {
     }
     res.status(201).json({ message: "Successful", data: cart });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -68,20 +72,20 @@ export const updateCartItem = async (req: Request, res: Response) => {
       return;
     }
     if (cart.userId.toString() != userId) {
-      res
-        .status(403)
-        .json({
-          message: "Invalid credentials",
-          error: "Cart owner is not same as authorized user",
-        });
+      res.status(403).json({
+        message: "Invalid credentials",
+        error: "Cart owner is not same as authorized user",
+      });
       return;
     }
     cart.quantity = quantity;
     await cart.save();
     res.status(200).json({ message: "Successful", data: cart });
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
   }
 };
 
@@ -97,20 +101,20 @@ export const deleteCartItem = async (req: Request, res: Response) => {
       return;
     }
     if (cart.userId.toString() !== userId) {
-      res
-        .status(403)
-        .json({
-          message: "Invalid credentials",
-          error: "Cart owner is not same as authorized user",
-        });
+      res.status(403).json({
+        message: "Invalid credentials",
+        error: "Cart owner is not same as authorized user",
+      });
       return;
     }
     await Cart.findByIdAndDelete(cartId);
     res.status(200).json({ message: "Successful" });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };

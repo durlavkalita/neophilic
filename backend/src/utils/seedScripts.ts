@@ -144,7 +144,7 @@ export const seedProducts = async () => {
 export const seedInventoryHistory = async () => {
   try {
     const products = await Product.find();
-    let inventoryItems = [];
+    const inventoryItems = [];
     for (let i = 0; i < products.length; i++) {
       const inventoryItem = {
         productId: products[i]._id,

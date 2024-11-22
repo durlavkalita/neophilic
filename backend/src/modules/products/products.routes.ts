@@ -12,7 +12,6 @@ import {
   authorizeAdmin,
 } from "../../middleware/auth.middleware.js";
 import { upload } from "../s3_storage/index.js";
-import { validateProduct } from "./products.validators.js";
 
 const router = express.Router();
 

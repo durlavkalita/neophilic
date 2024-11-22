@@ -16,8 +16,8 @@ export const createProduct = async (req: Request, res: Response) => {
 
     const parsedAttributes = JSON.parse(attributes);
 
-    const images = (req.files as any).map(
-      (item: { location: any }) => item.location
+    const images = (req.files as Express.MulterS3.File[]).map(
+      (item) => item.location
     );
 
     const newProduct = new Product({
@@ -46,10 +46,13 @@ export const createProduct = async (req: Request, res: Response) => {
 
     res.status(201).json({ message: "Successful", data: savedProduct });
     return;
-  } catch (error: any) {
+  } catch (error) {
     res
       .status(500)
-      .json({ message: "Error creating product", error: error.message });
+      .json({
+        message: "Error creating product",
+        error: (error as Error).message,
+      });
     return;
   }
 };
@@ -83,9 +86,11 @@ export const getAllProducts = async (req: Request, res: Response) => {
       totalItems: total,
     });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -103,16 +108,18 @@ export const getProductById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: product });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
 
 export const updateProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  let updates = req.body;
+  const updates = req.body;
   let prevStock;
   const newStock = updates.stock;
   if ("attributes" in updates) {
@@ -123,8 +130,8 @@ export const updateProductById = async (req: Request, res: Response) => {
   try {
     let newImages: string[] = [];
     if (req.files && Array.isArray(req.files)) {
-      newImages = (req.files as any).map(
-        (item: { location: string }) => item.location
+      newImages = (req.files as Express.MulterS3.File[]).map(
+        (item) => item.location
       );
     }
     const product = await Product.findById(id);
@@ -160,9 +167,11 @@ export const updateProductById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: updatedProduct });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -183,8 +192,10 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: products });
     return;
-  } catch (error: any) {
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -221,9 +232,11 @@ export const searchProducts = async (req: Request, res: Response) => {
       totalItems: total,
     });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };

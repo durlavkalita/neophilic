@@ -28,7 +28,9 @@ export const authenticate = async (
     req.user = user;
     next();
   } catch (error) {
-    res.status(400).json({ message: "Invalid token." });
+    res
+      .status(400)
+      .json({ message: "Invalid token.", error: (error as Error).message });
   }
 };
 

@@ -9,7 +9,7 @@ export interface IProduct extends Document {
   stock: number;
   images: string[] | null;
   categoryId: Types.ObjectId;
-  attributes: {};
+  attributes: Map<string, string>;
   status: "ENABLED" | "DISABLED";
   rating: number;
   createdAt: Date;

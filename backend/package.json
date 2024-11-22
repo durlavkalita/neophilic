@@ -6,7 +6,6 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "postbuild": "mkdirp dist/uploads/users dist/uploads/products",
     "prestart": "npm run build",
     "start": "node dist/index.js",
     "prod": "node dist/index.js",
@@ -32,6 +31,7 @@
     "pino": "^9.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.15.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
@@ -40,9 +40,11 @@
     "@types/multer-s3": "^3.0.3",
     "@types/node": "^22.7.5",
     "concurrently": "^9.0.1",
-    "mkdirp": "^3.0.1",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
     "nodemon": "^3.1.7",
     "rimraf": "^6.0.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0"
   }
 }

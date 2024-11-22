@@ -15,9 +15,11 @@ export const getAllOrders = async (req: Request, res: Response) => {
       });
       res.status(200).json({ message: "Successful", data: orders });
       return;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
-      res.status(500).json({ message: "Unsuccessful", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Unsuccessful", error: (error as Error).message });
       return;
     }
   } else {
@@ -37,9 +39,11 @@ export const getAllOrders = async (req: Request, res: Response) => {
         totalItems: total,
       });
       return;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
-      res.status(500).json({ message: "Unsuccessful", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Unsuccessful", error: (error as Error).message });
       return;
     }
   }
@@ -59,8 +63,8 @@ export const createOrder = async (req: Request, res: Response) => {
 
   try {
     let totalAmount = 0;
-    let orderItemsMod = [];
-    let inventoryUpdates = [];
+    const orderItemsMod = [];
+    const inventoryUpdates = [];
 
     for (const item of orderItems) {
       const { productId, quantity } = item;
@@ -130,9 +134,11 @@ export const createOrder = async (req: Request, res: Response) => {
     await InventoryHistory.insertMany(inventoryHistoryEntries);
     res.status(201).json({ message: "Successful", data: order });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -156,9 +162,11 @@ export const getOrderById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: order });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -178,9 +186,11 @@ export const getOrdersByUserId = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Successful", data: orders });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -209,9 +219,11 @@ export const getOrderInvoice = async (req: Request, res: Response) => {
     };
 
     res.status(200).json({ message: "Successful", data: invoice });
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -276,8 +288,10 @@ export const cancelOrder = async (req: Request, res: Response) => {
     await order.save();
     res.status(200).json({ message: "Order has been cancelled", order });
     return;
-  } catch (error: any) {
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -306,9 +320,11 @@ export const orderStatusChange = async (req: Request, res: Response) => {
     await order.save();
     res.status(200).json({ message: "Order status has changes", order });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };

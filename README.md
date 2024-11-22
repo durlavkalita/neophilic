@@ -22,8 +22,8 @@ docker-compose down # to stop
 - [ ] Payment gateway
 
 ### Codebase Review and Optimization
-- [ ] Review codebase for redundancy and clean up unnecessary code.
-- [ ] Ensure consistent and standardized error handling.
+- [x] Review codebase for redundancy and clean up unnecessary code.
+- [x] Ensure consistent and standardized error handling.
 - [ ] Implement structured and centralized logging.
 - [ ] Optimize MongoDB queries and indexes for performance.
 

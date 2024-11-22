@@ -25,11 +25,11 @@ export const getDashboardStatistics = async (req: Request, res: Response) => {
       },
     });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     res.status(500).json({
       message: "Unsuccessful",
-      error: error.message,
+      error: (error as Error).message,
     });
     return;
   }

@@ -1,9 +1,13 @@
-import { Schema, Document, Types, model } from "mongoose";
+import { Schema, Document, model } from "mongoose";
 
 export interface IOrder extends Document {
   userId: Schema.Types.ObjectId;
   totalAmount: number;
-  orderItems: any[];
+  orderItems: {
+    productId: string;
+    quantity: number;
+    priceAtTime: number;
+  }[];
   paymentStatus: "PENDING" | "PAID" | "FAILED";
   paymentMethod: "CREDIT_CARD" | "UPI" | "COD";
   currentStatus: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELED";

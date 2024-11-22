@@ -21,9 +21,11 @@ export const getAllAttributes = async (req: Request, res: Response) => {
       const attributes = await Attribute.find(searchQuery);
       res.status(200).json({ message: "Successful", data: attributes });
       return;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
-      res.status(500).json({ message: "Unsuccessful", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Unsuccessful", error: (error as Error).message });
       return;
     }
   } else {
@@ -42,9 +44,11 @@ export const getAllAttributes = async (req: Request, res: Response) => {
         totalItems: total,
       });
       return;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
-      res.status(500).json({ message: "Unsuccessful", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Unsuccessful", error: (error as Error).message });
       return;
     }
   }
@@ -61,9 +65,11 @@ export const getAttributeById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: attribute });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -75,9 +81,11 @@ export const createAttribute = async (req: Request, res: Response) => {
     await attribute.save();
     res.status(201).json({ message: "Successful", data: attribute });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -97,9 +105,11 @@ export const updateAttributeById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: attribute });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };

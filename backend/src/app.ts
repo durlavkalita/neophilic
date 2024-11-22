@@ -38,8 +38,8 @@ app.get("/api/seed", async (req: Request, res: Response) => {
   try {
     await seedCartsAndOrder();
     res.status(200).json({ message: "seed success" });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 

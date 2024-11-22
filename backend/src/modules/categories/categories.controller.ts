@@ -21,9 +21,11 @@ export const getAllCategories = async (req: Request, res: Response) => {
       const categories = await Category.find(searchQuery);
       res.status(200).json({ message: "Successful", data: categories });
       return;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
-      res.status(500).json({ message: "Unsuccessful", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Unsuccessful", error: (error as Error).message });
       return;
     }
   } else {
@@ -42,9 +44,11 @@ export const getAllCategories = async (req: Request, res: Response) => {
         totalItems: total,
       });
       return;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
-      res.status(500).json({ message: "Unsuccessful", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Unsuccessful", error: (error as Error).message });
       return;
     }
   }
@@ -62,9 +66,11 @@ export const getCategoryById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: category });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -76,9 +82,11 @@ export const createCategory = async (req: Request, res: Response) => {
     await newCategory.save();
     res.status(201).json({ message: "Successful", data: newCategory });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -99,9 +107,11 @@ export const updateCategoryById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: updatedCategory });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };

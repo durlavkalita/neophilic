@@ -34,11 +34,14 @@ export const registerUser = async (req: Request, res: Response) => {
       data: { accessToken, userDetails },
     });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     res
       .status(500)
-      .json({ message: "User register unsuccessful", error: error.message });
+      .json({
+        message: "User register unsuccessful",
+        error: (error as Error).message,
+      });
     return;
   }
 };
@@ -70,11 +73,11 @@ export const loginUser = async (req: Request, res: Response) => {
       data: { accessToken, userDetails },
     });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     res
       .status(500)
-      .json({ message: "Login Unsuccessful", error: error.message });
+      .json({ message: "Login Unsuccessful", error: (error as Error).message });
   }
 };
 
@@ -90,9 +93,11 @@ export const getUserById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "User found", data: user });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "User not found", error: error.message });
+    res
+      .status(500)
+      .json({ message: "User not found", error: (error as Error).message });
     return;
   }
 };
@@ -129,9 +134,11 @@ export const updateUserById = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Successful", data: updatedUser });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -157,9 +164,11 @@ export const updateUserRoleById = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful" });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -176,9 +185,11 @@ export const verifyToken = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Successful", data: user });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: "Unsuccessful", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Unsuccessful", error: (error as Error).message });
     return;
   }
 };
@@ -202,11 +213,14 @@ export const getAllUsers = async (req: Request, res: Response) => {
       totalItems: total,
     });
     return;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     res
       .status(500)
-      .json({ message: "Error fetching users", error: error.message });
+      .json({
+        message: "Error fetching users",
+        error: (error as Error).message,
+      });
     return;
   }
 };
