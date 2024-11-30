@@ -8,6 +8,12 @@ export interface IAttribute extends Document {
   updatedAt: Date;
 }
 
+export interface AttributeData {
+  name?: string;
+  values?: string[];
+  status?: "ENABLED" | "DISABLED";
+}
+
 const AttributeSchema = new Schema<IAttribute>(
   {
     name: { type: String, required: true },

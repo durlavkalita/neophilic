@@ -19,7 +19,12 @@ export interface IOrder extends Document {
 
 const OrderSchema = new Schema<IOrder>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     totalAmount: { type: Number, default: 0 },
     orderItems: [
       {

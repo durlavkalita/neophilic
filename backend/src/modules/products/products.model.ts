@@ -11,9 +11,25 @@ export interface IProduct extends Document {
   categoryId: Types.ObjectId;
   attributes: Map<string, string>;
   status: "ENABLED" | "DISABLED";
-  rating: number;
+  ratingTotal: number;
+  ratingCount: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ProductData {
+  name?: string;
+  description?: string;
+  basePrice?: number;
+  currentPrice?: number;
+  sku?: string;
+  stock?: number;
+  images?: string[] | null;
+  categoryId?: Types.ObjectId;
+  attributes?: Map<string, string>;
+  status?: "ENABLED" | "DISABLED";
+  ratingTotal?: number;
+  ratingCount?: number;
 }
 
 const ProductSchema = new Schema<IProduct>(
@@ -25,13 +41,19 @@ const ProductSchema = new Schema<IProduct>(
     sku: { type: String, required: true, unique: true },
     stock: { type: Number, default: 0 },
     images: [{ type: String }],
-    categoryId: { type: Schema.Types.ObjectId, ref: "Category", index: true },
+    categoryId: {
+      type: Schema.Types.Mixed,
+      ref: "Category",
+      index: true,
+      required: true,
+    },
     attributes: {
       type: Map,
       of: String,
     },
     status: { type: String, enum: ["ENABLED", "DISABLED"], default: "ENABLED" },
-    rating: { type: Number },
+    ratingTotal: { type: Number },
+    ratingCount: { type: Number },
   },
   {
     timestamps: true,

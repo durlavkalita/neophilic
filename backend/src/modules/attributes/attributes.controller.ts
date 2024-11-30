@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Attribute } from "./attributes.model.js";
+import { Attribute, AttributeData } from "./attributes.model.js";
 import logger from "../../config/logger.config.js";
 
 export const getAllAttributes = async (req: Request, res: Response) => {
@@ -75,9 +75,15 @@ export const getAttributeById = async (req: Request, res: Response) => {
 };
 
 export const createAttribute = async (req: Request, res: Response) => {
+  const { name, values, status } = req.body;
+
   try {
-    const { name, values } = req.body;
-    const attribute = new Attribute({ name, values });
+    const reqData: AttributeData = {};
+
+    if (name) reqData.name = name;
+    if (values) reqData.values = values;
+    if (status !== undefined) reqData.status = status;
+    const attribute = new Attribute(reqData);
     await attribute.save();
     res.status(201).json({ message: "Successful", data: attribute });
     return;
@@ -91,12 +97,18 @@ export const createAttribute = async (req: Request, res: Response) => {
 };
 
 export const updateAttributeById = async (req: Request, res: Response) => {
+  const attributeId = req.params.id;
+  const { name, values, status } = req.body;
+
   try {
-    const attribute = await Attribute.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const reqData: AttributeData = {};
+
+    if (name) reqData.name = name;
+    if (values) reqData.values = values;
+    if (status !== undefined) reqData.status = status;
+    const attribute = await Attribute.findByIdAndUpdate(attributeId, reqData, {
+      new: true,
+    });
     if (!attribute) {
       res
         .status(404)

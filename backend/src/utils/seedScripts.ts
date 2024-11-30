@@ -80,6 +80,7 @@ export const seedCategories = async () => {
   const categories = [];
   for (let i = 0; i < 14; i++) {
     const category = new Category({
+      _id: i + 1,
       name: defaultCategories[i],
       description: faker.lorem.sentence(),
     });

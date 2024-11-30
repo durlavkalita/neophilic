@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Category } from "./categories.model.js";
+import { Category, CategoryData } from "./categories.model.js";
 import logger from "../../config/logger.config.js";
 
 export const getAllCategories = async (req: Request, res: Response) => {
@@ -76,9 +76,15 @@ export const getCategoryById = async (req: Request, res: Response) => {
 };
 
 export const createCategory = async (req: Request, res: Response) => {
-  const { name, description } = req.body;
+  const { name, description, status } = req.body;
+
   try {
-    const newCategory = new Category({ name, description });
+    const reqData: CategoryData = {};
+
+    if (name) reqData.name = name;
+    if (description) reqData.description = description;
+    if (status !== undefined) reqData.status = status;
+    const newCategory = new Category(reqData);
     await newCategory.save();
     res.status(201).json({ message: "Successful", data: newCategory });
     return;
@@ -92,13 +98,23 @@ export const createCategory = async (req: Request, res: Response) => {
 };
 
 export const updateCategoryById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updateData = req.body;
+  const categoryId = req.params.id;
+  const { name, description, status } = req.body;
+
   try {
-    const updatedCategory = await Category.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const reqData: CategoryData = {};
+
+    if (name) reqData.name = name;
+    if (description) reqData.description = description;
+    if (status !== undefined) reqData.status = status;
+    const updatedCategory = await Category.findByIdAndUpdate(
+      categoryId,
+      reqData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!updatedCategory) {
       res
         .status(404)

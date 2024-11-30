@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "./auth.model.js";
+import { User, UserData } from "./auth.model.js";
 import logger from "../../config/logger.config.js";
 import bcrypt from "bcryptjs";
 import { generateAccessToken } from "../../utils/helpers.js";
@@ -36,12 +36,10 @@ export const registerUser = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     logger.error(error);
-    res
-      .status(500)
-      .json({
-        message: "User register unsuccessful",
-        error: (error as Error).message,
-      });
+    res.status(500).json({
+      message: "User register unsuccessful",
+      error: (error as Error).message,
+    });
     return;
   }
 };
@@ -103,26 +101,25 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const updateUserById = async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const { firstName, lastName, address, phoneNumber } = req.body;
+
   try {
-    const id = req.params.id;
-    if (id != req.user?.id) {
+    const reqData: UserData = {};
+
+    if (firstName) reqData.firstName = firstName;
+    if (lastName) reqData.lastName = lastName;
+    if (address) reqData.address = address;
+    if (phoneNumber) reqData.phoneNumber = phoneNumber;
+    if (userId != req.user?.id) {
       res.status(403).json({
         message: "Invalid credentials",
         error: "User id doesn't match authorized id.",
       });
       return;
     }
-    const { firstName, lastName, address, phoneNumber } = req.body;
-    const image = req.file?.filename;
 
-    const updateData: Partial<typeof User.prototype> = {};
-    if (firstName) updateData.firstName = firstName;
-    if (lastName) updateData.lastName = lastName;
-    if (address) updateData.address = address;
-    if (phoneNumber) updateData.phoneNumber = phoneNumber;
-    if (image) updateData.image = image;
-
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+    const updatedUser = await User.findByIdAndUpdate(userId, reqData, {
       new: true,
     }).select("-password");
     if (!updatedUser) {
@@ -144,13 +141,11 @@ export const updateUserById = async (req: Request, res: Response) => {
 };
 
 export const updateUserRoleById = async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const role = req.body.role;
   try {
-    const id = req.params.id;
-    const role = req.body.role;
-    console.log(id, role);
-
     const updatedUser = await User.findByIdAndUpdate(
-      id,
+      userId,
       { role: role },
       {
         new: true,
@@ -215,12 +210,10 @@ export const getAllUsers = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     logger.error(error);
-    res
-      .status(500)
-      .json({
-        message: "Error fetching users",
-        error: (error as Error).message,
-      });
+    res.status(500).json({
+      message: "Error fetching users",
+      error: (error as Error).message,
+    });
     return;
   }
 };

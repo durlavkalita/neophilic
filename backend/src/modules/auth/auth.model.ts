@@ -13,6 +13,14 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
+export interface UserData {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  address?: string;
+  image?: string;
+}
+
 const UserSchema = new Schema<IUser>(
   {
     email: { type: String, required: true, unique: true },

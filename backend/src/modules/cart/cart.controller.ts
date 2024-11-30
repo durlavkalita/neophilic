@@ -5,7 +5,7 @@ import logger from "../../config/logger.config.js";
 export const getCart = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   try {
-    const cart = await Cart.find({ userId: userId });
+    const cart = await Cart.find({ userId: userId }).populate("productId");
     if (!cart) {
       res
         .status(404)

@@ -12,7 +12,12 @@ export interface IInventoryHistory extends Document {
 
 const InventoryHistorySchema = new Schema<IInventoryHistory>(
   {
-    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+      index: true,
+    },
     quantityChanged: { type: Number, required: true },
     quantityTotal: { type: Number, required: true },
     type: {

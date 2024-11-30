@@ -9,7 +9,10 @@ import {
   authenticate,
   authorizeAdmin,
 } from "../../middleware/auth.middleware.js";
-import { validateAttribute } from "./attributes.validators.js";
+import {
+  validateCreateAttribute,
+  validateUpdateAttribute,
+} from "./attributes.validators.js";
 
 const router = express.Router();
 
@@ -18,7 +21,7 @@ router.post(
   "/",
   authenticate,
   authorizeAdmin,
-  validateAttribute,
+  validateCreateAttribute,
   createAttribute
 );
 router.get("/:id", getAttributeById);
@@ -26,7 +29,7 @@ router.put(
   "/:id",
   authenticate,
   authorizeAdmin,
-  validateAttribute,
+  validateUpdateAttribute,
   updateAttributeById
 );
 

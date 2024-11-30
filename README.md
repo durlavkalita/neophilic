@@ -17,15 +17,16 @@ docker-compose down # to stop
 - [x] Frontend, Backend and db integration via Docker.
 - [x] Image storage.
 - [x] Track inventory records
-- [ ] Product Review system
+- [x] Product Review system
 - [ ] OTP based sign-in
 - [ ] Payment gateway
 
 ### Codebase Review and Optimization
 - [x] Review codebase for redundancy and clean up unnecessary code.
 - [x] Ensure consistent and standardized error handling.
-- [ ] Implement structured and centralized logging.
-- [ ] Optimize MongoDB queries and indexes for performance.
+- [x] Implement logging for backend.
+- [ ] Implement logging for frontend.
+- [x] Optimize MongoDB queries and indexes for performance.
 
 ### Testing
 - [ ] Write unit tests for critical business logic and API endpoints.
@@ -35,17 +36,18 @@ docker-compose down # to stop
 - [ ] Conduct security testing for potential vulnerabilities.
 
 ### Database Optimization
-- [ ] Set up proper indexing in MongoDB for commonly queried fields.
+- [x] Set up proper indexing in MongoDB for commonly queried fields.
 - [ ] Enable automated database backups.
 - [ ] Test database restoration processes.
 - [ ] Explore MongoDB sharding and replication for scalability and availability.
 
 ### Security Enhancements
-- [ ] Verify strict role-based authentication and authorization.
+- [x] Verify strict role-based authentication and authorization.
 - [ ] Use secrets management for environment variables (e.g., AWS Secrets Manager).
 - [ ] Enforce HTTPS with SSL/TLS certificates.
-- [ ] Implement rate limiting on API endpoints.
-- [ ] Double-check all input validation and sanitization.
+- [x] Implement rate limiting on API endpoints.
+- [x] Double-check all input validation.
+- [ ] Double-check all input sanitization.
 
 ### DevOps and Deployment
 - [ ] Set up a CI/CD pipeline for automated deployments.
@@ -54,7 +56,7 @@ docker-compose down # to stop
 - [ ] Review Docker Compose setup for scalability or transition to Kubernetes if needed.
 
 ### Frontend Optimization
-- [ ] Use Lighthouse to audit performance, accessibility, and SEO.
+- [x] Use Lighthouse to audit performance, accessibility, and SEO.
 - [ ] Implement caching for static assets and configure a CDN.
 - [ ] Test responsive design on multiple devices and screen sizes.
 

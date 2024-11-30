@@ -14,11 +14,12 @@ import {
   authorizeAdmin,
   authorizeUser,
 } from "../../middleware/auth.middleware.js";
+import { authRateLimiter } from "../../middleware/rateLimit.middleware.js";
 
 const router = express.Router();
 
-router.post("/register", validateRegister, registerUser);
-router.post("/login", validateLogin, loginUser);
+router.post("/register", authRateLimiter, validateRegister, registerUser);
+router.post("/login", authRateLimiter, validateLogin, loginUser);
 router.get("/users/:id", authenticate, getUserById);
 router.get("/users", authenticate, authorizeAdmin, getAllUsers);
 router.put("/users/:id", authenticate, authorizeUser, updateUserById);

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { User } from "../modules/auth/auth.model.js";
 
 const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || "jwtaccesssecret";
 
@@ -22,7 +23,19 @@ export const authenticate = async (
     const user = { id: decoded.id, role: decoded.role };
 
     if (!user) {
-      res.status(401).json({ message: "Invalid token." });
+      res
+        .status(401)
+        .json({ message: "Invalid token.", error: "Invalid token." });
+    }
+
+    const userData = await User.findById(user.id);
+    if (!userData) {
+      res
+        .status(401)
+        .json({
+          message: "No user with this token.",
+          error: "No user with this token.",
+        });
     }
 
     req.user = user;

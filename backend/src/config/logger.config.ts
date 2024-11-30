@@ -1,6 +1,6 @@
-import pino from "pino";
+import { pino } from "pino";
 
-const logger = pino.pino(
+const logger = pino(
   {
     timestamp: pino.stdTimeFunctions.isoTime,
   },

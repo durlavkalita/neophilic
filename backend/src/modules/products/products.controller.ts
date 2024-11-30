@@ -10,7 +10,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const basePrice = req.body.basePrice;
     const currentPrice = req.body.currentPrice;
     const sku = req.body.sku;
-    const categoryId = req.body.category;
+    const categoryId = req.body.categoryId;
     const stock = Number(req.body.stock);
     const attributes = req.body.attributes;
 
@@ -47,12 +47,10 @@ export const createProduct = async (req: Request, res: Response) => {
     res.status(201).json({ message: "Successful", data: savedProduct });
     return;
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Error creating product",
-        error: (error as Error).message,
-      });
+    res.status(500).json({
+      message: "Error creating product",
+      error: (error as Error).message,
+    });
     return;
   }
 };
@@ -121,13 +119,12 @@ export const updateProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const updates = req.body;
   let prevStock;
-  const newStock = updates.stock;
-  if ("attributes" in updates) {
-    const parsedAttributes = JSON.parse(updates.attributes);
-    updates["attributes"] = parsedAttributes;
-  }
-
   try {
+    const newStock = updates.stock;
+    if ("attributes" in updates) {
+      const parsedAttributes = JSON.parse(updates.attributes);
+      updates["attributes"] = parsedAttributes;
+    }
     let newImages: string[] = [];
     if (req.files && Array.isArray(req.files)) {
       newImages = (req.files as Express.MulterS3.File[]).map(

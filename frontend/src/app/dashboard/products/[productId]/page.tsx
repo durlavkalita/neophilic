@@ -56,7 +56,7 @@ export default function Page() {
     formData.append("basePrice", price);
     formData.append("currentPrice", price);
     formData.append("description", description);
-    formData.append("category", productCategory);
+    formData.append("categoryId", productCategory);
     formData.append("stock", String(stock));
     formData.append("attributes", JSON.stringify(productAttributes));
     formData.append("status", status);

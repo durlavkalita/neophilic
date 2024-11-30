@@ -1,16 +1,16 @@
-import { fileURLToPath } from "url";
-import path from "path";
+// import { fileURLToPath } from "url";
+// import path from "path";
 import jwt from "jsonwebtoken";
 import { IUser } from "../modules/auth/auth.model.js";
 
-export const getRootDir = () => {
-  // console.log(import.meta.url);
-  // console.log(fileURLToPath(import.meta.url));
-  // console.log(path.dirname(fileURLToPath(import.meta.url)));
-  const rootPath = path.dirname(fileURLToPath(import.meta.url));
+// export const getRootDir = () => {
+//   // console.log(import.meta.url);
+//   // console.log(fileURLToPath(import.meta.url));
+//   // console.log(path.dirname(fileURLToPath(import.meta.url)));
+//   const rootPath = path.dirname(fileURLToPath(import.meta.url));
 
-  return rootPath;
-};
+//   return rootPath;
+// };
 
 export function generateUniqueFileName(file: Express.Multer.File): string {
   const timestamp = Date.now();
