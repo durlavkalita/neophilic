@@ -3,12 +3,13 @@ import app from "./app.js";
 import "dotenv/config";
 
 const PORT = process.env.PORT || 5000;
-connectToMongoDB();
+const MONGO_URI =
+  process.env.MONGODB_URI ||
+  "mongodb://root:password@mongodb:27017/ecommerce?authSource=admin";
 
 async function startServer() {
   try {
-    connectToMongoDB();
-    console.log("MongoDB connected successfully");
+    await connectToMongoDB(MONGO_URI);
 
     app.listen(PORT, () => {
       console.log(`Server running on port http://localhost:${PORT}`);

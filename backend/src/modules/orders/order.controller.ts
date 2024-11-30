@@ -263,8 +263,6 @@ export const cancelOrder = async (req: Request, res: Response) => {
       // Update product's current stock
       const product = await Product.findById(productId);
       if (product) {
-        console.log(product);
-
         product.stock += quantity;
         const updatedProduct = await product.save();
 

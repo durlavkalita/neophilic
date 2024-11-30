@@ -1,153 +1,258 @@
+import {
+  connectToMongoDB,
+  disconnectFromMongoDB,
+} from "./../../src/config/db.config";
 import request from "supertest";
 import app from "../../src/app";
-import { describe, expect, it } from "@jest/globals";
-// import { Category } from "../../src/modules/categories/categories.model";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from "@jest/globals";
+import mongoose, { ObjectId } from "mongoose";
+import { Category } from "../../src/modules/categories/categories.model";
+import { User } from "../../src/modules/auth/auth.model";
+import { generateAccessToken } from "../../src/utils/helpers";
 
-// jest.mock("../../config/logger.config", () => ({
-//   error: jest.fn(),
-//   info: jest.fn(),
-// }));
+const MONGO_TEST_URI =
+  "mongodb://root:password@localhost:27017/testdb?authSource=admin";
 
-// jest.mock("../../src/categories/categories.model", () => ({
-//   Category: {
-//     find: jest.fn(),
-//     findById: jest.fn(),
-//     save: jest.fn(),
-//     findByIdAndUpdate: jest.fn(),
-//     countDocuments: jest.fn(),
-//   },
-// }));
+beforeAll(async () => {
+  connectToMongoDB(MONGO_TEST_URI);
+});
 
-// const MockCategory = Category as jest.Mocked<typeof Category>;
+afterAll(async () => {
+  await mongoose.connection.dropDatabase();
+  await disconnectFromMongoDB();
+});
 
-describe("Home API", () => {
-  describe("GET /", () => {
-    it("Should fetch homepage", async () => {
-      const res = await request(app).get("/");
+describe("Category API", () => {
+  beforeEach(async () => {
+    await Category.deleteMany();
+    await User.deleteMany();
+  });
+
+  describe("GET /api/categories", () => {
+    it("should fetch all categories without pagination", async () => {
+      await Category.insertMany([
+        {
+          name: "Electronics",
+          description: "Gadgets and devices",
+          status: "ENABLED",
+        },
+        {
+          name: "Clothing",
+          description: "Apparel and accessories",
+          status: "ENABLED",
+        },
+      ]);
+
+      const res = await request(app).get("/api/categories");
+
       expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Successful");
+      expect(res.body.data).toHaveLength(2);
+    });
+
+    it("should fetch paginated categories", async () => {
+      await Category.insertMany([
+        { name: "Category 1", description: "Description 1", status: "ENABLED" },
+        { name: "Category 2", description: "Description 2", status: "ENABLED" },
+        { name: "Category 3", description: "Description 3", status: "ENABLED" },
+      ]);
+
+      const res = await request(app).get("/api/categories?page=1&limit=2");
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Successful");
+      expect(res.body.data).toHaveLength(2);
+      expect(res.body.totalPages).toBe(2);
+      expect(res.body.currentPage).toBe(1);
+      expect(res.body.totalItems).toBe(3);
+    });
+
+    it("should fetch categories with status filter", async () => {
+      await Category.insertMany([
+        {
+          name: "Enabled Category",
+          description: "Description 1",
+          status: "ENABLED",
+        },
+        {
+          name: "Disabled Category",
+          description: "Description 2",
+          status: "DISABLED",
+        },
+      ]);
+
+      const res = await request(app).get("/api/categories?status=DISABLED");
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Successful");
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].name).toBe("Disabled Category");
     });
   });
-  // describe("GET /categories", () => {
-  // it("should fetch all categories without pagination", async () => {
-  //   const mockCategories = [{ name: "Category1" }, { name: "Category2" }];
-  //   MockCategory.find.mockResolvedValue(mockCategories);
 
-  //   const res = await request(app).get("/api/categories");
-  //   expect(res.status).toBe(200);
-  //   expect(res.body.message).toBe("Successful");
-  //   expect(res.body.data).toEqual(mockCategories);
-  // });
+  describe("GET /api/categories/:id", () => {
+    it("should fetch a category by ID", async () => {
+      const category = await Category.create({
+        name: "Electronics",
+        description: "Gadgets and devices",
+        status: "ENABLED",
+      });
+      const categoryId = (category._id as ObjectId).toString();
 
-  // it('should fetch paginated categories', async () => {
-  //   const mockCategories = [{ name: 'Category1' }, { name: 'Category2' }];
-  //   Category.find.mockResolvedValue(mockCategories);
-  //   Category.countDocuments.mockResolvedValue(50);
+      const res = await request(app).get(`/api/categories/${categoryId}`);
 
-  //   const res = await request(app)
-  //     .get('/api/categories')
-  //     .query({ page: 1, limit: 10 });
-  //   expect(res.status).toBe(200);
-  //   expect(res.body.message).toBe('Successful');
-  //   expect(res.body.data).toEqual(mockCategories);
-  //   expect(res.body.totalPages).toBe(5);
-  //   expect(res.body.currentPage).toBe(1);
-  //   expect(res.body.totalItems).toBe(50);
-  // });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Successful");
+      expect(res.body.data.name).toBe("Electronics");
+    });
 
-  // it('should return 500 on database error', async () => {
-  //   Category.find.mockRejectedValue(new Error('Database error'));
+    it("should return 404 if category is not found", async () => {
+      const res = await request(app).get(
+        `/api/categories/64b0c28f123456789abcdef0`
+      );
 
-  //   const res = await request(app).get('/api/categories');
-  //   expect(res.status).toBe(500);
-  //   expect(res.body.message).toBe('Unsuccessful');
-  //   expect(res.body.error).toBe('Database error');
-  // });
-  // });
+      expect(res.status).toBe(404);
+      expect(res.body.message).toBe("Category not found");
+    });
+  });
 
-  // describe('GET /categories/:id', () => {
-  //   it('should fetch a category by ID', async () => {
-  //     const mockCategory = { name: 'Category1' };
-  //     Category.findById.mockResolvedValue(mockCategory);
+  describe("POST /api/categories", () => {
+    it("should allow an admin to create a category", async () => {
+      const adminUser = await User.create({
+        email: "admin@admin.com",
+        password: "password",
+        role: "ADMIN",
+      });
+      const adminToken = generateAccessToken(adminUser);
 
-  //     const res = await request(app).get('/api/categories/1');
-  //     expect(res.status).toBe(200);
-  //     expect(res.body.message).toBe('Successful');
-  //     expect(res.body.data).toEqual(mockCategory);
-  //   });
+      const payload = {
+        name: "New Category",
+        description: "A new test category",
+        status: "ENABLED",
+      };
 
-  //   it('should return 404 if category is not found', async () => {
-  //     Category.findById.mockResolvedValue(null);
+      const res = await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
-  //     const res = await request(app).get('/api/categories/1');
-  //     expect(res.status).toBe(404);
-  //     expect(res.body.message).toBe('Category not found');
-  //   });
+      expect(res.status).toBe(201);
+      expect(res.body.message).toBe("Successful");
+      expect(res.body.data.name).toBe("New Category");
+    });
 
-  //   it('should return 500 on database error', async () => {
-  //     Category.findById.mockRejectedValue(new Error('Database error'));
+    it("should return 403 for non-admin users", async () => {
+      const normalUser = await User.create({
+        email: "test@test.com",
+        password: "password",
+        role: "USER",
+      });
+      const userToken = generateAccessToken(normalUser);
 
-  //     const res = await request(app).get('/api/categories/1');
-  //     expect(res.status).toBe(500);
-  //     expect(res.body.message).toBe('Unsuccessful');
-  //     expect(res.body.error).toBe('Database error');
-  //   });
-  // });
+      const payload = {
+        name: "Unauthorized Category",
+        description: "Should not be allowed",
+        status: "ENABLED",
+      };
 
-  // describe('POST /categories', () => {
-  //   it('should create a new category', async () => {
-  //     const mockCategory = { name: 'New Category', description: 'Test Desc' };
-  //     Category.save.mockResolvedValue(mockCategory);
+      const res = await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(payload);
 
-  //     const res = await request(app).post('/api/categories').send(mockCategory);
-  //     expect(res.status).toBe(201);
-  //     expect(res.body.message).toBe('Successful');
-  //     expect(res.body.data).toEqual(mockCategory);
-  //   });
+      expect(res.status).toBe(403);
+      expect(res.body.message).toBe("Access denied. Insufficient permissions.");
+    });
+  });
 
-  //   it('should return 500 on database error', async () => {
-  //     Category.save.mockRejectedValue(new Error('Database error'));
+  describe("PUT /api/categories/:id", () => {
+    it("should allow an admin to update an existing category", async () => {
+      const adminUser = await User.create({
+        email: "admin@admin.com",
+        password: "password",
+        role: "ADMIN",
+      });
+      const adminToken = generateAccessToken(adminUser);
 
-  //     const res = await request(app)
-  //       .post('/api/categories')
-  //       .send({ name: 'New Category', description: 'Test Desc' });
-  //     expect(res.status).toBe(500);
-  //     expect(res.body.message).toBe('Unsuccessful');
-  //     expect(res.body.error).toBe('Database error');
-  //   });
-  // });
+      const category = await Category.create({
+        name: "Old Category",
+        description: "Old description",
+        status: "DISABLED",
+      });
+      const categoryId = (category._id as ObjectId).toString();
+      const payload = {
+        name: "Updated Category",
+        description: "Updated description",
+        status: "ENABLED",
+      };
 
-  // describe('PUT /categories/:id', () => {
-  //   it('should update a category by ID', async () => {
-  //     const mockCategory = { name: 'Updated Category', description: 'Updated Desc' };
-  //     Category.findByIdAndUpdate.mockResolvedValue(mockCategory);
+      const res = await request(app)
+        .put(`/api/categories/${categoryId}`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
-  //     const res = await request(app)
-  //       .put('/api/categories/1')
-  //       .send({ name: 'Updated Category' });
-  //     expect(res.status).toBe(200);
-  //     expect(res.body.message).toBe('Successful');
-  //     expect(res.body.data).toEqual(mockCategory);
-  //   });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Successful");
+      expect(res.body.data.name).toBe("Updated Category");
+    });
 
-  //   it('should return 404 if category is not found', async () => {
-  //     Category.findByIdAndUpdate.mockResolvedValue(null);
+    it("should return 403 for non-admin users", async () => {
+      const normalUser = await User.create({
+        email: "test@test.com",
+        password: "password",
+        role: "USER",
+      });
+      const adminToken = generateAccessToken(normalUser);
 
-  //     const res = await request(app)
-  //       .put('/api/categories/1')
-  //       .send({ name: 'Updated Category' });
-  //     expect(res.status).toBe(404);
-  //     expect(res.body.message).toBe('Category not found');
-  //   });
+      const category = await Category.create({
+        name: "Old Category",
+        description: "Old description",
+        status: "DISABLED",
+      });
+      const categoryId = (category._id as ObjectId).toString();
+      const payload = {
+        name: "Updated Category",
+        description: "Updated description",
+        status: "ENABLED",
+      };
 
-  //   it('should return 500 on database error', async () => {
-  //     Category.findByIdAndUpdate.mockRejectedValue(new Error('Database error'));
+      const res = await request(app)
+        .put(`/api/categories/${categoryId}`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
-  //     const res = await request(app)
-  //       .put('/api/categories/1')
-  //       .send({ name: 'Updated Category' });
-  //     expect(res.status).toBe(500);
-  //     expect(res.body.message).toBe('Unsuccessful');
-  //     expect(res.body.error).toBe('Database error');
-  //   });
-  // });
+      expect(res.status).toBe(403);
+      expect(res.body.message).toBe("Access denied. Insufficient permissions.");
+    });
+
+    it("should return 404 if category to update is not found", async () => {
+      const adminUser = await User.create({
+        email: "admin@admin.com",
+        password: "password",
+        role: "ADMIN",
+      });
+      const adminToken = generateAccessToken(adminUser);
+
+      const payload = {
+        name: "Nonexistent Category",
+        description: "No description",
+        status: "ENABLED",
+      };
+
+      const res = await request(app)
+        .put(`/api/categories/64b0c28f123456789abcdef0`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
+
+      expect(res.status).toBe(404);
+      expect(res.body.message).toBe("Category not found");
+    });
+  });
 });

@@ -11,7 +11,6 @@ export const getObjectUrl = async (filename: string) => {
     Key: filename,
   });
   const url = await getSignedUrl(s3Client, command);
-  console.log(url);
 
   return url;
 };
@@ -23,7 +22,6 @@ export const putObject = async (filename: string, contentType: string) => {
     ContentType: contentType,
   });
   const url = await getSignedUrl(s3Client, command);
-  console.log(url);
 
   return url;
 };

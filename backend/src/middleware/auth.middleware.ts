@@ -20,30 +20,23 @@ export const authenticate = async (
       id: string;
       role: "USER" | "USER_PRO" | "VENDOR" | "ADMIN";
     };
-    const user = { id: decoded.id, role: decoded.role };
+    const user = await User.findById(decoded.id);
 
     if (!user) {
-      res
-        .status(401)
-        .json({ message: "Invalid token.", error: "Invalid token." });
+      res.status(401).json({
+        message: "No user with this token.",
+        error: "No user with this token.",
+      });
+      return;
     }
 
-    const userData = await User.findById(user.id);
-    if (!userData) {
-      res
-        .status(401)
-        .json({
-          message: "No user with this token.",
-          error: "No user with this token.",
-        });
-    }
-
-    req.user = user;
+    req.user = { id: user.id, role: user.role };
     next();
   } catch (error) {
     res
       .status(400)
       .json({ message: "Invalid token.", error: (error as Error).message });
+    return;
   }
 };
 
@@ -67,11 +60,11 @@ export const authorizeAdmin = (
   res: Response,
   next: NextFunction
 ) => {
-  const userRole = req.user?.role;
-  if (!userRole || userRole != "ADMIN") {
+  if (req.user?.role != "ADMIN") {
     res
       .status(403)
       .json({ message: "Access denied. Insufficient permissions." });
+    return;
   }
   next();
 };

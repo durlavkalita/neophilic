@@ -17,7 +17,7 @@ export interface CategoryData {
 const CategorySchema = new Schema<ICategory>(
   {
     _id: {
-      type: Schema.Types.Mixed,
+      type: Types.ObjectId,
       required: true,
       default: () => new Types.ObjectId(),
     },

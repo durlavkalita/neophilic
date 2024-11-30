@@ -77,10 +77,26 @@ export const seedCategories = async () => {
     "Doors & WIndows",
     "Home Decor",
   ];
+  const _ids = [
+    "64c59a459e5e3b33d1baf1a3",
+    "64c59a459e5e3b33d1baf1a4",
+    "64c59a459e5e3b33d1baf1a5",
+    "64c59a459e5e3b33d1baf1a6",
+    "64c59a459e5e3b33d1baf1a7",
+    "64c59a459e5e3b33d1baf1a8",
+    "64c59a459e5e3b33d1baf1a9",
+    "64c59a459e5e3b33d1baf1b0",
+    "64c59a459e5e3b33d1baf1b1",
+    "64c59a459e5e3b33d1baf1b2",
+    "64c59a459e5e3b33d1baf1b3",
+    "64c59a459e5e3b33d1baf1b4",
+    "64c59a459e5e3b33d1baf1b5",
+    "64c59a459e5e3b33d1baf1b6",
+  ];
   const categories = [];
   for (let i = 0; i < 14; i++) {
     const category = new Category({
-      _id: i + 1,
+      _id: _ids[i],
       name: defaultCategories[i],
       description: faker.lorem.sentence(),
     });
@@ -111,12 +127,12 @@ export const seedProducts = async () => {
   try {
     await seedUsers();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
   try {
     await seedAttributes();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
   const categories = await seedCategories();
   await Product.deleteMany({});
@@ -159,7 +175,7 @@ export const seedInventoryHistory = async () => {
     console.log("Inventory data seeded successfully");
     return savedInventory;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

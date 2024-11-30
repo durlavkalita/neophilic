@@ -1,14 +1,21 @@
 import mongoose from "mongoose";
 import "dotenv/config";
 
-export const connectToMongoDB = async () => {
+export const connectToMongoDB = async (uri: string) => {
   try {
-    const dbUri =
-      process.env.MONGODB_URI ||
-      "mongodb://root:password@mongodb:27017/ecommerce?authSource=admin";
+    const dbUri = uri;
     await mongoose.connect(dbUri);
     console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB connection error:", error);
+  }
+};
+
+export const disconnectFromMongoDB = async () => {
+  try {
+    await mongoose.disconnect();
+    console.log("MongoDB disconnected");
+  } catch (error) {
+    console.error("Error disconnecting from MongoDB:", error);
   }
 };
