@@ -29,8 +29,8 @@ docker-compose down # to stop
 - [x] Optimize MongoDB queries and indexes for performance.
 
 ### Testing
-- [ ] Write unit tests for critical business logic and API endpoints.
-- [ ] Add integration tests to verify interactions between services.
+- [x] Write unit tests for critical business logic and API endpoints.
+- [x] Add integration tests to verify interactions between services.
 - [ ] Implement end-to-end tests for user workflows (e.g., Cypress/Playwright).
 - [ ] Perform load testing to evaluate performance under stress.
 - [ ] Conduct security testing for potential vulnerabilities.

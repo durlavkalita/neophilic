@@ -29,7 +29,7 @@ afterAll(async () => {
   await disconnectFromMongoDB();
 });
 
-describe("Category API", () => {
+describe("Categories API", () => {
   beforeEach(async () => {
     await Category.deleteMany();
     await User.deleteMany();

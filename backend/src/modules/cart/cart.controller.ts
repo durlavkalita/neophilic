@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Cart } from "./cart.model.js";
 import logger from "../../config/logger.config.js";
+import { Product } from "../products/products.model.js";
 
 export const getCart = async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -28,6 +29,14 @@ export const addToCart = async (req: Request, res: Response) => {
   const { productId, quantity } = req.body;
 
   try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      res
+        .status(404)
+        .json({ message: "Product not found", error: "Product not found" });
+      return;
+    }
+
     const cart = await Cart.findOne({
       userId: userId,
       productId: productId,

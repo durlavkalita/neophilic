@@ -62,43 +62,90 @@ export const seedUsers = async () => {
 export const seedCategories = async () => {
   await Category.deleteMany({});
   const defaultCategories = [
-    "Lighting",
-    "Consumer Durables",
-    "Home and Kitchenware",
-    "Tools",
-    "Paints",
-    "Bath & Sanitary",
-    "Tiles & Flooring",
-    "Digital Locks & Safes",
-    "Hardware",
-    "Kitchen & Sink",
-    "Plywood & Laminates",
-    "MDF & HDF",
-    "Doors & WIndows",
-    "Home Decor",
-  ];
-  const _ids = [
-    "64c59a459e5e3b33d1baf1a3",
-    "64c59a459e5e3b33d1baf1a4",
-    "64c59a459e5e3b33d1baf1a5",
-    "64c59a459e5e3b33d1baf1a6",
-    "64c59a459e5e3b33d1baf1a7",
-    "64c59a459e5e3b33d1baf1a8",
-    "64c59a459e5e3b33d1baf1a9",
-    "64c59a459e5e3b33d1baf1b0",
-    "64c59a459e5e3b33d1baf1b1",
-    "64c59a459e5e3b33d1baf1b2",
-    "64c59a459e5e3b33d1baf1b3",
-    "64c59a459e5e3b33d1baf1b4",
-    "64c59a459e5e3b33d1baf1b5",
-    "64c59a459e5e3b33d1baf1b6",
+    {
+      _id: "64c59a459e5e3b33d1baf1a3",
+      name: "Lighting",
+      description:
+        "Antiquus addo thesis trans curto defaeco deserunt strues beatus.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1a4",
+      name: "Consumer Durables",
+      description: "Similique facere crinis tricesimus corona claudeo.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1a5",
+      name: "Home and Kitchenware",
+      description: "Causa complectus consectetur libero.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1a6",
+      name: "Tools",
+      description: "Centum sum sordeo vicinus.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1a7",
+      name: "Paints",
+      description:
+        "In strues tum casso tenetur patior itaque voco patria vivo.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1a8",
+      name: "Bath & Sanitary",
+      description:
+        "Complectus recusandae decipio volaticus testimonium fuga beatae deorsum cruciamentum.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1a9",
+      name: "Tiles & Flooring",
+      description:
+        "Voluptatibus absorbeo utrimque adnuo varietas usitas adhuc decipio odit.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b0",
+      name: "Digital Locks & Safes",
+      description:
+        "Adfectus caute cultura demens alius clementia urbanus umerus deduco adipiscor.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b1",
+      name: "Hardware",
+      description: "Argentum tantillus tergum ustulo quis accusantium collum.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b2",
+      name: "Kitchen & Sink",
+      description: "Solum auxilium tabula.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b3",
+      name: "Plywood & Laminates",
+      description: "Copia corrupti consectetur.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b4",
+      name: "MDF & HDF",
+      description: "Aequitas adiuvo acceptus depulso adopto adopto.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b5",
+      name: "Doors & WIndows",
+      description:
+        "Vorago triumphus natus vox vulgivagus abscido surgo amoveo crepusculum voco.",
+    },
+    {
+      _id: "64c59a459e5e3b33d1baf1b6",
+      name: "Home Decor",
+      description:
+        "Nostrum cena vomito adinventitias coniecto absconditus quos.",
+    },
   ];
   const categories = [];
   for (let i = 0; i < 14; i++) {
     const category = new Category({
-      _id: _ids[i],
-      name: defaultCategories[i],
-      description: faker.lorem.sentence(),
+      _id: defaultCategories[i]._id,
+      name: defaultCategories[i].name,
+      description: defaultCategories[i].description,
     });
     categories.push(category);
   }
